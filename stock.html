@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CeluLink | Catálogo de Equipos 🇲🇽📱🇺🇸</title>
+  <style>
+    *{margin: 0;
+      padding: 0;
+      box-sizing: border-box;}body{font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      min-height: 100vh;
+      padding-top: 20px;
+      color: #e2e8f0;}/* HEADER CON LOGO */
+    .header{text-align: center;
+      margin-bottom: 40px;
+      padding: 0 20px;}.header h1{font-size: 2.5rem;
+      background: linear-gradient(135deg, #00c97e, #0ea5e9, #ff2e2e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      font-weight: 800;}.header-flag{height: 45px;
+      width: 45px;
+      display: inline-block;
+      margin: 0 10px;
+      vertical-align: middle;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));}.header-flag:hover{transform: scale(1.15) rotate(-5deg);
+      filter: drop-shadow(0 6px 12px rgba(0, 201, 126, 0.4));}.header p{color: #cbd5e0;
+      font-size: 1.1rem;
+      margin-bottom: 5px;}.flag-line{font-size: 1rem;
+      color: #0ea5e9;
+      font-weight: 600;
+      letter-spacing: 1px;}/* SECCIÓN DE PASOS - MEJORADA */
+    .pasos-container{display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 50px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px;}.paso-link{text-decoration: none;
+      color: inherit;
+      flex: 1;
+      min-width: 220px;
+      max-width: 280px;}.paso{display: flex;
+      align-items: center;
+      gap: 15px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+      padding: 18px 24px;
+      border-radius: 14px;
+      border-left: 5px solid #00c97e;
+      color: #e2e8f0;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      cursor: pointer;}.paso-link:hover .paso{transform: translateY(-6px);
+      border-left-color: #ff2e2e;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(51, 65, 85, 0.95));
+      box-shadow: 0 12px 30px rgba(0, 201, 126, 0.25), 0 0 20px rgba(255, 46, 46, 0.1);
+      border-color: rgba(255, 46, 46, 0.3);}.paso-numero{color: #fff;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      min-width: 45px;
+      font-family: 'Arial', sans-serif;}.paso-link:nth-child(1) .paso-numero{background: linear-gradient(135deg, #00c97e, #00a86b);
+      box-shadow: 0 4px 15px rgba(0, 201, 126, 0.4);}.paso-link:nth-child(2) .paso-numero{background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);}.paso-link:nth-child(3) .paso-numero{background: linear-gradient(135deg, #ff2e2e, #dc2626);
+      box-shadow: 0 4px 15px rgba(255, 46, 46, 0.4);}.paso-link:nth-child(4) .paso-numero{background: linear-gradient(135deg, #f59e0b, #d97706);
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);}/* FILTROS */
+    .filtro-container{display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px;}.btn-filtro{background: linear-gradient(135deg, rgba(51, 65, 85, 0.6), rgba(71, 85, 105, 0.6));
+      color: #cbd5e0;
+      border: 2px solid #475569;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);}.btn-filtro:hover{background: linear-gradient(135deg, rgba(71, 85, 105, 0.8), rgba(100, 116, 139, 0.8));
+      border-color: #0ea5e9;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(14, 165, 233, 0.2);}.btn-filtro.activo{background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      border-color: #0ea5e9;
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);}/* CONTENEDOR PRINCIPAL */
+    main.catalogo-container{max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 60px;}/* GRID DE PRODUCTOS */
+    .catalogo-grid{display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 30px;
+      animation: fadeIn 1s ease-in-out;}@keyframes fadeIn{from{opacity: 0;
+        transform: translateY(20px);}to{opacity: 1;
+        transform: translateY(0);}}/* TARJETAS DE PRODUCTO */
+    .producto-card{background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 18px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-top: 5px solid #00c97e;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid rgba(14, 165, 233, 0.1);
+      position: relative;
+      overflow: hidden;}.producto-card::before{content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+      z-index: 1;}.producto-card:hover::before{left: 100%;}.producto-card:hover{transform: translateY(-12px);
+      box-shadow: 0 15px 45px rgba(0, 201, 126, 0.25);
+      border-top-color: #ff2e2e;
+      background: linear-gradient(135deg, #334155 0%, #475569 100%);
+      border-color: rgba(255, 46, 46, 0.3);}.producto-img-container{width: 100%;
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.5), rgba(30, 41, 59, 0.5));
+      border: 1px solid rgba(14, 165, 233, 0.1);
+      position: relative;
+      z-index: 2;}.producto-img-container:hover{transform: scale(1.08);}.producto-img{width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 12px;}.producto-nombre{font-weight: 700;
+      color: #e2e8f0;
+      font-size: 1.25rem;
+      text-align: center;
+      margin-bottom: 10px;
+      text-transform: capitalize;
+      position: relative;
+      z-index: 2;}.producto-descripcion{color: #cbd5e0;
+      font-size: 0.95rem;
+      text-align: center;
+      margin-bottom: 12px;
+      min-height: 50px;
+      position: relative;
+      z-index: 2;}.producto-casos-uso{color: #00c97e;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 18px;
+      font-style: italic;
+      line-height: 1.5;
+      position: relative;
+      z-index: 2;
+      font-weight: 600;}.producto-precio{font-size: 1.4rem;
+      font-weight: 800;
+      color: #00c97e;
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+      letter-spacing: 0.5px;}/* BOTONES */
+    .botones-container{display: flex;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;}.btn-pago{background: linear-gradient(135deg, #00c97e, #00a86b);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      min-width: 130px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 201, 126, 0.3);}.btn-pago:hover{background: linear-gradient(135deg, #00a86b, #00c97e);
+      transform: scale(1.06);
+      box-shadow: 0 8px 25px rgba(0, 201, 126, 0.5);}.btn-asesor{background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      min-width: 130px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);}.btn-asesor:hover{background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      transform: scale(1.06);
+      box-shadow: 0 8px 25px rgba(14, 165, 233, 0.5);}/* LOADER */
+    #loader{text-align: center;
+      color: #0ea5e9;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 60px 0;
+      animation: pulse 1.5s infinite;}@keyframes pulse{0%, 100%{opacity: 1;}50%{opacity: 0.6;}}/* RESPONSIVE */
+    @media (max-width: 768px){.header h1{font-size: 2rem;}.pasos-container{gap: 10px;}.paso{min-width: 160px;
+        padding: 14px 18px;
+        font-size: 0.9rem;}.paso-numero{width: 40px;
+        height: 40px;
+        font-size: 1.1rem;}.producto-img-container{height: 200px;}.producto-nombre{font-size: 1.1rem;}.btn-pago, .btn-asesor{font-size: 0.9rem;
+        padding: 10px 16px;
+        min-width: 110px;}}@media (max-width: 600px){.header h1{font-size: 1.8rem;}.pasos-container{gap: 8px;}.paso{min-width: 140px;
+        padding: 12px 14px;
+        font-size: 0.8rem;}.paso-numero{width: 36px;
+        height: 36px;
+        font-size: 1rem;}.producto-img-container{height: 180px;}.catalogo-grid{grid-template-columns: 1fr;}.btn-pago, .btn-asesor{font-size: 0.85rem;
+        padding: 10px 14px;}}</style>
+</head>
+<body>
+  <!-- 📱 HEADER -->
+  <div class="header">
+    <h1><img src="https://github.com/piztian/celulink/blob/main/fotos/MX%20icon.png?raw=true" alt="México" class="header-flag"> CELULINK 📱 <img src="https://github.com/piztian/celulink/blob/main/fotos/US%20icon.png?raw=true" alt="USA" class="header-flag"></h1>
+    <p class="flag-line">Compra desde EE.UU. y recibe en México</p>
+  </div>
+  <!-- 📱 Sección de pasos mejorada -->
+  <div class="pasos-container">
+    <a href="https://www.celulink.mx/stock/" class="paso-link">
+      <div class="paso">
+        <div class="paso-numero">1</div>
+        <div>Elige el equipo</div>
+      </div>
+    </a>
+    <a href="https://www.celulink.mx/payment/" class="paso-link">
+      <div class="paso">
+        <div class="paso-numero">2</div>
+        <div>Paga y reporta el pago</div>
+      </div>
+    </a>
+    <a href="https://www.celulink.mx/reportapago/" class="paso-link">
+      <div class="paso">
+        <div class="paso-numero">3</div>
+        <div>Llena datos de destino</div>
+      </div>
+    </a>
+    <a href="https://www.celulink.mx/" class="paso-link">
+      <div class="paso">
+        <div class="paso-numero">4</div>
+        <div>Recibe en México</div>
+      </div>
+    </a>
+  </div>
+  <!-- 📱 Contenedor principal -->
+  <main class="catalogo-container">
+    <div id="loader">⏳ Cargando productos...</div>
+    <div id="filtros" class="filtro-container"></div>
+    <div id="catalogo" class="catalogo-grid"></div>
+  </main>
+  <!-- 🧠 Script principal -->
+  <script>
+    const SHEET_ID = "1mGPMOWBdtD5q4qAFRlqo6z0A5jQ4cpw_lB3DH0D6qgQ";
+    const SHEET_NAME = "Productos";
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+    const WHATSAPP_LINK = "https://wa.link/i0j8lh";
+
+    function limpiarNombreArchivo(nombre){return nombre ? nombre.replace(/\.[^/.]+$/, "") : "";}async function cargarProductos(){try{const response = await fetch(SHEET_URL);
+        const text = await response.text();
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+        const headers = json.table.cols.map(col => col.label);
+        const data = json.table.rows.map(row =>{let obj ={};
+          headers.forEach((header, i) =>{obj[header]= row.c[i]?.v || "";});
+          return obj;});
+        
+        window.todosProductos = data;
+        crearFiltros(data);
+        
+        // Filtrar productos con precio
+        const productosConPrecio = data.filter(p => p["dlls"]);
+        
+        mostrarProductos(productosConPrecio);}catch (err){console.error("Error cargando datos:", err);
+        document.getElementById("loader").innerText = "❌ Error al cargar los productos";}}function crearFiltros(productos){const marcas = new Set();
+      productos.forEach(p =>{const nombre = limpiarNombreArchivo(p["archivo"]);
+        const marca = nombre.split(" ")[0];
+        if(marca) marcas.add(marca);});
+      const marcasArray = Array.from(marcas).sort();
+      const filtrosContainer = document.getElementById("filtros");
+      filtrosContainer.innerHTML = '<button class="btn-filtro activo" data-filtro="todos">✓ Todos</button>';
+      
+      marcasArray.forEach(marca =>{const btn = document.createElement("button");
+        btn.className = "btn-filtro";
+        btn.textContent = marca;
+        btn.dataset.filtro = marca;
+        btn.addEventListener("click", () => filtrarPorMarca(marca));
+        filtrosContainer.appendChild(btn);});
+      
+      document.querySelector('[data-filtro="todos"]').addEventListener("click", () => filtrarPorMarca("todos"));}function filtrarPorMarca(marca){const botones = document.querySelectorAll(".btn-filtro");
+      botones.forEach(btn => btn.classList.remove("activo"));
+      document.querySelector(`[data-filtro="${marca}"]`).classList.add("activo");
+      
+      if(marca === "todos"){mostrarProductos(window.todosProductos);}else{const filtrados = window.todosProductos.filter(p =>{const nombre = limpiarNombreArchivo(p["archivo"]);
+          return nombre.split(" ")[0]=== marca;});
+        
+        // Filtrar productos con precio
+        const filtradosConPrecio = filtrados.filter(p => p["dlls"]);
+        
+        mostrarProductos(filtradosConPrecio);}}function mostrarProductos(productos){const contenedor = document.getElementById("catalogo");
+      document.getElementById("loader").style.display = "none";
+
+      if (!productos.length){contenedor.innerHTML = '<p style="text-align:center;color:#a0aec0; grid-column: 1 / -1; font-size: 1.1rem;">🔍 No hay coincidencias - Filtrar esta información especifica</p>';
+        return;}contenedor.innerHTML = productos.map(p =>{const nombre = limpiarNombreArchivo(p["archivo"]);
+        const archivo = p["archivo"];
+        const imagen = p["url_imagen"];
+        const caracteristicas = p["Caracteristicas"];
+        const casoUso = p["Ideal_para"]|| "";
+        const precio = p["dlls"];
+        const linkPago = p["url de pago"]|| "";
+        const linkAsesor = p["link_asesor"]|| WHATSAPP_LINK;
+        const precioRedondeado = Math.ceil(parseFloat(precio.toString().replace(/[^0-9.]/g, ""))) || precio;
+
+        return `
+          <div class="producto-card">
+            <a href="https://www.celulink.mx/details/?archivo=${encodeURIComponent(archivo)}" style="width:100%; text-decoration:none; color:inherit;">
+              <div class="producto-img-container">
+                ${imagen ? `<img class="producto-img" src="${imagen}" alt="${nombre}" />` : ""}</div>
+            </a>
+            <h3 class="producto-nombre">${nombre}</h3>
+            <p class="producto-descripcion">${caracteristicas || ""}</p>
+            ${casoUso ? `<p class="producto-casos-uso">✓ ${casoUso}</p>` : ""}<p class="producto-precio">💵 ${precioRedondeado}USD</p>
+            <div class="botones-container">
+              ${linkPago ? `<a href="${linkPago}" target="_blank" class="btn-pago">💳 Pagar</a>` : ""}<a href="${linkAsesor}" target="_blank" class="btn-asesor">📞 Asesor</a>
+            </div>
+          </div>
+        `;}).join("");}cargarProductos();
+  </script>
+</body>
+</html>
+````</file_text>
+<path>/mnt/user-data/outputs/celulink-script.html</path>
+</parameters>
+</invoke>
+</function_calls>
+</computer_use>
