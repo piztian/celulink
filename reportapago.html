@@ -463,6 +463,64 @@
         }, 300);
       }, 2000);
     }
+    // 🎯 DETECTAR ENVÍO DEL FORMULARIO BITRIX24
+window.addEventListener('load', function() {
+  // Esperar a que Bitrix24 cargue
+  setTimeout(() => {
+    const formBitrix = document.querySelector('form[data-b24form]') || 
+                       document.querySelector('#formulario-bitrix form');
+    
+    if (formBitrix) {
+      formBitrix.addEventListener('submit', function(e) {
+        registrarVentaReferido();
+      });
+    }
+  }, 3000); // Esperar 3 segundos para que Bitrix24 cargue
+});
+
+// 📊 REGISTRAR VENTA DE REFERIDO
+async function registrarVentaReferido() {
+  const codigoReferido = localStorage.getItem('codigoReferido');
+  const pedido = JSON.parse(sessionStorage.getItem('pedidoCarrito') || 'null');
+  
+  // Si no hay código de referido, no hacer nada
+  if (!codigoReferido) {
+    console.log('No hay código de referido');
+    return;
+  }
+  
+  // Preparar datos de la venta
+  const datosVenta = {
+    codigo: codigoReferido,
+    productos: pedido ? pedido.productos.map(p => p.nombre).join(', ') : 'Compra directa',
+    monto: pedido ? pedido.total : 0,
+    timestamp: new Date().toISOString()
+  };
+  
+  console.log('📊 Registrando venta para referido:', codigoReferido);
+  
+  // Enviar a Google Apps Script
+  try {
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1kWL6Jfgm4Qltf3AppBZOsxA3MYQpg5Q_xVEo3a78vC5e0KwwihUBoB_TNMNc7kTDDg/exec';
+    
+    await fetch(`${SCRIPT_URL}?action=registrarVenta`, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(datosVenta)
+    });
+    
+    console.log('✅ Venta registrada correctamente');
+    
+    // Opcional: Limpiar el código de referido después de usarlo
+    // localStorage.removeItem('codigoReferido');
+    
+  } catch (error) {
+    console.error('❌ Error al registrar venta:', error);
+  }
+}
   </script>
 </body>
 </html>
