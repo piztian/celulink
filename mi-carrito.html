@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Carrito | CeluLink 🛒</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #e2e8f0;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #00c97e, #0ea5e9, #ff2e2e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      color: #cbd5e0;
+      font-size: 1.1rem;
+    }
+    
+    .btn-volver {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0ea5e9;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 30px;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-volver:hover {
+      background: #0284c7;
+      transform: translateX(-5px);
+    }
+    
+    .carrito-card {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 18px;
+      border-top: 5px solid #00c97e;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      margin-bottom: 30px;
+    }
+    
+    .carrito-vacio {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .carrito-vacio-icon {
+      font-size: 5rem;
+      margin-bottom: 20px;
+      opacity: 0.5;
+    }
+    
+    .carrito-vacio h2 {
+      color: #cbd5e0;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+    
+    .carrito-vacio p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+    }
+    
+    .btn-seguir-comprando {
+      background: linear-gradient(135deg, #00c97e, #00a86b);
+      color: #fff;
+      padding: 14px 30px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+    
+    .btn-seguir-comprando:hover {
+      background: linear-gradient(135deg, #00a86b, #00c97e);
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0, 201, 126, 0.4);
+    }
+    
+    .carrito-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid rgba(0, 201, 126, 0.2);
+    }
+    
+    .carrito-titulo {
+      font-size: 1.8rem;
+      color: #e2e8f0;
+      font-weight: 700;
+    }
+    
+    .btn-vaciar {
+      background: linear-gradient(135deg, #ff2e2e, #dc2626);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 25px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-vaciar:hover {
+      background: linear-gradient(135deg, #dc2626, #ff2e2e);
+      transform: scale(1.05);
+    }
+    
+    .productos-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .producto-item {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 12px;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 100px 1fr auto;
+      gap: 20px;
+      align-items: center;
+      border: 1px solid rgba(0, 201, 126, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .producto-item:hover {
+      border-color: rgba(0, 201, 126, 0.5);
+      background: rgba(15, 23, 42, 0.7);
+    }
+    
+    .producto-imagen {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px;
+    }
+    
+    .producto-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .producto-nombre {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+    
+    .producto-precio {
+      font-size: 1.1rem;
+      color: #00c97e;
+      font-weight: 600;
+    }
+    
+    .producto-acciones {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-end;
+    }
+    
+    .cantidad-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 201, 126, 0.1);
+      border-radius: 25px;
+      padding: 5px;
+    }
+    
+    .btn-cantidad {
+      background: #00c97e;
+      color: #fff;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-cantidad:hover {
+      background: #00a86b;
+      transform: scale(1.1);
+    }
+    
+    .cantidad-numero {
+      color: #e2e8f0;
+      font-weight: 700;
+      font-size: 1.1rem;
+      min-width: 30px;
+      text-align: center;
+    }
+    
+    .btn-eliminar {
+      background: linear-gradient(135deg, #ff2e2e, #dc2626);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-eliminar:hover {
+      background: linear-gradient(135deg, #dc2626, #ff2e2e);
+      transform: scale(1.05);
+    }
+    
+    .subtotal {
+      color: #cbd5e0;
+      font-size: 0.95rem;
+    }
+    
+    .resumen-box {
+      background: rgba(0, 201, 126, 0.1);
+      border-left: 4px solid #00c97e;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+    }
+    
+    .resumen-linea {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      color: #cbd5e0;
+      font-size: 1rem;
+    }
+    
+    .resumen-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 15px;
+      border-top: 2px solid rgba(0, 201, 126, 0.3);
+      margin-top: 10px;
+    }
+    
+    .resumen-total-label {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+    
+    .resumen-total-valor {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #00c97e;
+    }
+    
+    /* 📝 SECCIÓN DE PROCESO DE PAGO */
+    .proceso-pago {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(14, 165, 233, 0.05));
+      border: 2px solid rgba(14, 165, 233, 0.3);
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+    }
+    
+    .proceso-titulo {
+      color: #0ea5e9;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .pasos-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .paso-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 15px;
+      border-radius: 12px;
+      border-left: 4px solid #0ea5e9;
+      transition: all 0.3s ease;
+    }
+    
+    .paso-item:hover {
+      background: rgba(15, 23, 42, 0.7);
+      border-left-color: #00c97e;
+    }
+    
+    .paso-numero {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      color: #fff;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    
+    .paso-contenido {
+      flex: 1;
+    }
+    
+    .paso-titulo {
+      color: #e2e8f0;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 5px;
+    }
+    
+    .paso-descripcion {
+      color: #cbd5e0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    /* 💬 BOTONES DE CONTACTO */
+    .botones-contacto {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .btn-contacto {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: #fff;
+      padding: 16px;
+      border-radius: 25px;
+      border: none;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .btn-contacto.whatsapp:hover {
+      background: linear-gradient(135deg, #128C7E, #25D366);
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
+    }
+    
+    .btn-contacto.telegram {
+      background: linear-gradient(135deg, #0088cc, #006699);
+    }
+    
+    .btn-contacto.telegram:hover {
+      background: linear-gradient(135deg, #006699, #0088cc);
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0, 136, 204, 0.4);
+    }
+    
+    .btn-reportar {
+      width: 100%;
+      background: linear-gradient(135deg, #00c97e, #00a86b);
+      color: #fff;
+      padding: 18px;
+      border-radius: 25px;
+      border: none;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+    
+    .btn-reportar:hover {
+      background: linear-gradient(135deg, #00a86b, #00c97e);
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(0, 201, 126, 0.4);
+    }
+    
+    .nota-importante {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 4px solid #f59e0b;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      color: #cbd5e0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    
+    .nota-importante strong {
+      color: #f59e0b;
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .carrito-card {
+        padding: 20px;
+      }
+      
+      .proceso-pago {
+        padding: 20px;
+      }
+      
+      .producto-item {
+        grid-template-columns: 80px 1fr;
+        gap: 15px;
+      }
+      
+      .producto-imagen {
+        width: 80px;
+        height: 80px;
+      }
+      
+      .producto-acciones {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+      
+      .carrito-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+      }
+      
+      .btn-vaciar {
+        width: 100%;
+        text-align: center;
+      }
+      
+      .botones-contacto {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .carrito-card {
+      animation: fadeIn 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button class="btn-volver" onclick="volverAlCatalogo()">← Seguir Comprando</button>
+    
+    <div class="header">
+      <h1>🛒 Mi Carrito</h1>
+      <p>Revisa tu pedido y solicita tu link de pago</p>
+    </div>
+    
+    <div id="contenido-carrito"></div>
+  </div>
+
+  <script>
+    // 📞 CONFIGURACIÓN DE CONTACTO
+    const WHATSAPP_NUMBER = "5213413300001"; // ⚠️ CAMBIAR POR TU NÚMERO
+    const TELEGRAM_BOT = "@CeluCenter"; // ⚠️ CAMBIAR POR TU BOT/USUARIO
+    
+    let carrito = JSON.parse(localStorage.getItem('carritoCompras')) || [];
+
+    // 🎁 SISTEMA DE REFERIDOS
+    function obtenerCodigoReferido() {
+      return localStorage.getItem('codigoReferido') || null;
+    }
+
+    function volverAlCatalogo() {
+      window.history.back();
+    }
+
+    function actualizarCarrito() {
+      localStorage.setItem('carritoCompras', JSON.stringify(carrito));
+      renderizarCarrito();
+    }
+
+    function modificarCantidad(index, cambio) {
+      carrito[index].cantidad += cambio;
+      
+      if (carrito[index].cantidad <= 0) {
+        eliminarProducto(index);
+      } else {
+        actualizarCarrito();
+      }
+    }
+
+    function eliminarProducto(index) {
+      if (confirm('¿Estás seguro de eliminar este producto del carrito?')) {
+        carrito.splice(index, 1);
+        actualizarCarrito();
+      }
+    }
+
+    function vaciarCarrito() {
+      if (confirm('¿Estás seguro de vaciar todo el carrito?')) {
+        carrito = [];
+        actualizarCarrito();
+      }
+    }
+
+    function calcularTotal() {
+      return carrito.reduce((total, item) => total + (item.precio * item.cantidad), 0);
+    }
+
+    function calcularTotalItems() {
+      return carrito.reduce((total, item) => total + item.cantidad, 0);
+    }
+
+    function generarCodigoPedido() {
+      const fecha = new Date();
+      const codigo = `CEL${fecha.getFullYear()}${String(fecha.getMonth() + 1).padStart(2, '0')}${String(fecha.getDate()).padStart(2, '0')}${String(fecha.getHours()).padStart(2, '0')}${String(fecha.getMinutes()).padStart(2, '0')}${String(fecha.getSeconds()).padStart(2, '0')}`;
+      return codigo;
+    }
+
+    function contactarWhatsApp() {
+      const total = calcularTotal();
+      const totalItems = calcularTotalItems();
+      const codigoPedido = generarCodigoPedido();
+      const codigoReferido = obtenerCodigoReferido();
+      
+      // Crear resumen del pedido
+      let resumenProductos = carrito.map(item => 
+        `• ${item.nombre}\n  Cantidad: ${item.cantidad}\n  Precio: $${item.precio} USD\n  Subtotal: $${item.precio * item.cantidad} USD`
+      ).join('\n\n');
+      
+      // Mensaje para WhatsApp
+      let mensajeWhatsApp = `🛒 *SOLICITUD DE LINK DE PAGO*
+
+📋 *Código de Pedido:* ${codigoPedido}`;
+
+      if (codigoReferido) {
+        mensajeWhatsApp += `\n🎁 *Código de Referido:* ${codigoReferido}`;
+      }
+
+      mensajeWhatsApp += `
+
+📦 *Productos (${totalItems}):*
+${resumenProductos}
+
+💰 *TOTAL A PAGAR: $${total} USD*
+
+---
+Por favor, envíenme el link de pago o los datos para realizar la transferencia.
+
+¡Gracias! 😊`;
+
+      // Guardar pedido para reportar pago después
+      const pedidoData = {
+        codigo: codigoPedido,
+        productos: carrito,
+        total: total,
+        fecha: new Date().toISOString(),
+        codigoReferido: codigoReferido
+      };
+      
+      sessionStorage.setItem('pedidoCarrito', JSON.stringify(pedidoData));
+      
+      // Abrir WhatsApp
+      const urlWhatsApp = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensajeWhatsApp)}`;
+      window.open(urlWhatsApp, '_blank');
+    }
+
+    function contactarTelegram() {
+      const total = calcularTotal();
+      const totalItems = calcularTotalItems();
+      const codigoPedido = generarCodigoPedido();
+      const codigoReferido = obtenerCodigoReferido();
+      
+      // Crear resumen del pedido
+      let resumenProductos = carrito.map(item => 
+        `• ${item.nombre}\n  Cantidad: ${item.cantidad}\n  Precio: $${item.precio} USD\n  Subtotal: $${item.precio * item.cantidad} USD`
+      ).join('\n\n');
+      
+      // Mensaje para Telegram
+      let mensajeTelegram = `🛒 SOLICITUD DE LINK DE PAGO
+
+📋 Código de Pedido: ${codigoPedido}`;
+
+      if (codigoReferido) {
+        mensajeTelegram += `\n🎁 Código de Referido: ${codigoReferido}`;
+      }
+
+      mensajeTelegram += `
+
+📦 Productos (${totalItems}):
+${resumenProductos}
+
+💰 TOTAL A PAGAR: $${total} USD
+
+---
+Por favor, envíenme el link de pago o los datos para realizar la transferencia.
+
+¡Gracias! 😊`;
+
+      // Guardar pedido
+      const pedidoData = {
+        codigo: codigoPedido,
+        productos: carrito,
+        total: total,
+        fecha: new Date().toISOString(),
+        codigoReferido: codigoReferido
+      };
+      
+      sessionStorage.setItem('pedidoCarrito', JSON.stringify(pedidoData));
+      
+      // Abrir Telegram
+      const urlTelegram = `https://t.me/${TELEGRAM_BOT.replace('@', '')}?text=${encodeURIComponent(mensajeTelegram)}`;
+      window.open(urlTelegram, '_blank');
+    }
+
+    function irAReportarPago() {
+      // Verificar que haya un pedido guardado
+      const pedido = sessionStorage.getItem('pedidoCarrito');
+      if (!pedido) {
+        alert('⚠️ Primero debes solicitar tu link de pago');
+        return;
+      }
+      window.location.href = 'https://www.celulink.mx/reportapago/';
+    }
+
+    function renderizarCarrito() {
+      const contenedor = document.getElementById('contenido-carrito');
+      
+      if (carrito.length === 0) {
+        contenedor.innerHTML = `
+          <div class="carrito-card">
+            <div class="carrito-vacio">
+              <div class="carrito-vacio-icon">🛒</div>
+              <h2>Tu carrito está vacío</h2>
+              <p>Agrega productos para comenzar tu compra</p>
+              <a href="/stock-carrito/" class="btn-seguir-comprando">
+                🛍️ Ir al Catálogo
+              </a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const totalItems = calcularTotalItems();
+      const total = calcularTotal();
+
+      const productosHTML = carrito.map((item, index) => `
+        <div class="producto-item">
+          <img src="${item.imagen || 'https://via.placeholder.com/100'}" 
+               alt="${item.nombre}" 
+               class="producto-imagen">
+          
+          <div class="producto-info">
+            <div class="producto-nombre">${item.nombre}</div>
+            <div class="producto-precio">💵 $${item.precio} USD</div>
+            <div class="subtotal">Subtotal: $${item.precio * item.cantidad} USD</div>
+          </div>
+          
+          <div class="producto-acciones">
+            <div class="cantidad-control">
+              <button class="btn-cantidad" onclick="modificarCantidad(${index}, -1)">−</button>
+              <span class="cantidad-numero">${item.cantidad}</span>
+              <button class="btn-cantidad" onclick="modificarCantidad(${index}, 1)">+</button>
+            </div>
+            <button class="btn-eliminar" onclick="eliminarProducto(${index})">
+              🗑️ Eliminar
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      contenedor.innerHTML = `
+        <div class="carrito-card">
+          <div class="carrito-header">
+            <h2 class="carrito-titulo">Productos (${totalItems})</h2>
+            <button class="btn-vaciar" onclick="vaciarCarrito()">
+              🗑️ Vaciar Carrito
+            </button>
+          </div>
+          
+          <div class="productos-lista">
+            ${productosHTML}
+          </div>
+          
+          <div class="resumen-box">
+            <div class="resumen-linea">
+              <span>Total de productos:</span>
+              <span>${totalItems} ${totalItems === 1 ? 'producto' : 'productos'}</span>
+            </div>
+            
+            <div class="resumen-total">
+              <span class="resumen-total-label">Total a pagar:</span>
+              <span class="resumen-total-valor">$${total} USD</span>
+            </div>
+          </div>
+          
+          <!-- 📝 PROCESO DE PAGO -->
+          <div class="proceso-pago">
+            <h3 class="proceso-titulo">📋 Proceso de Compra</h3>
+            
+            <div class="pasos-lista">
+              <div class="paso-item">
+                <div class="paso-numero">1</div>
+                <div class="paso-contenido">
+                  <div class="paso-titulo">Contacta a un asesor</div>
+                  <div class="paso-descripcion">Haz click en WhatsApp o Telegram para enviar tu pedido. Te responderemos en minutos.</div>
+                </div>
+              </div>
+              
+              <div class="paso-item">
+                <div class="paso-numero">2</div>
+                <div class="paso-contenido">
+                  <div class="paso-titulo">Recibe tu link de pago</div>
+                  <div class="paso-descripcion">Te enviaremos el link de pago personalizado o los datos para transferencia bancaria.</div>
+                </div>
+              </div>
+              
+              <div class="paso-item">
+                <div class="paso-numero">3</div>
+                <div class="paso-contenido">
+                  <div class="paso-titulo">Realiza el pago</div>
+                  <div class="paso-descripcion">Paga con el link que te enviamos o realiza la transferencia. Guarda tu comprobante.</div>
+                </div>
+              </div>
+              
+              <div class="paso-item">
+                <div class="paso-numero">4</div>
+                <div class="paso-contenido">
+                  <div class="paso-titulo">Reporta tu pago</div>
+                  <div class="paso-descripcion">Regresa aquí y haz click en "Ya pagué, reportar pago" para completar tu pedido.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 💬 BOTONES DE CONTACTO -->
+          <div class="botones-contacto">
+            <button class="btn-contacto whatsapp" onclick="contactarWhatsApp()">
+              📱 WhatsApp
+            </button>
+            <button class="btn-contacto telegram" onclick="contactarTelegram()">
+              ✈️ Telegram
+            </button>
+          </div>
+          
+          <button class="btn-reportar" onclick="irAReportarPago()">
+            ✅ Ya pagué, reportar pago
+          </button>
+          
+          <div class="nota-importante">
+            <strong>⚠️ Importante:</strong> No vacíes tu carrito hasta que hayas completado el proceso. La información de tu pedido se guardará automáticamente cuando contactes a un asesor.
+          </div>
+        </div>
+      `;
+    }
+
+    // Inicializar
+    renderizarCarrito();
+  </script>
+</body>
+</html>
