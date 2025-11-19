@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reportar Pago | CeluLink</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #e2e8f0;
+    }
+    
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #00c97e, #0ea5e9, #ff2e2e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+    
+    .header p {
+      color: #cbd5e0;
+      font-size: 1.1rem;
+    }
+    
+    /* 🎁 BANNER DE REFERIDO */
+    #banner-referido {
+      background: linear-gradient(135deg, rgba(0, 201, 126, 0.2), rgba(14, 165, 233, 0.2));
+      border: 2px solid #00c97e;
+      border-radius: 12px;
+      padding: 15px 20px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    
+    #banner-referido p {
+      color: #cbd5e0;
+      margin: 0;
+      font-size: 0.9rem;
+    }
+    
+    #banner-referido strong {
+      color: #00c97e;
+    }
+    
+    #codigo-banner {
+      color: #0ea5e9;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    
+    /* 📦 RESUMEN DEL PEDIDO */
+    .resumen-pedido {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 18px;
+      border-top: 5px solid #00c97e;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .resumen-titulo {
+      color: #00c97e;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .codigo-pedido {
+      background: rgba(0, 201, 126, 0.1);
+      border-left: 4px solid #00c97e;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .codigo-pedido strong {
+      color: #00c97e;
+      font-size: 1.2rem;
+    }
+    
+    .codigo-copiable {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 8px 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .codigo-copiable:hover {
+      background: rgba(15, 23, 42, 0.8);
+    }
+    
+    .codigo-texto {
+      color: #0ea5e9;
+      font-weight: 700;
+      font-size: 1.1rem;
+      user-select: all;
+    }
+    
+    .btn-copiar {
+      background: #00c97e;
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-copiar:hover {
+      background: #00a86b;
+    }
+    
+    .productos-resumen {
+      background: rgba(15, 23, 42, 0.5);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .producto-resumen-item {
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(203, 213, 224, 0.1);
+      display: grid;
+      grid-template-columns: 60px 1fr auto;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .producto-resumen-item:last-child {
+      border-bottom: none;
+    }
+    
+    .producto-resumen-img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 5px;
+    }
+    
+    .producto-resumen-info {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .producto-resumen-nombre {
+      color: #e2e8f0;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    
+    .producto-resumen-cantidad {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    
+    .producto-resumen-precio {
+      color: #00c97e;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    
+    .total-pedido {
+      background: rgba(0, 201, 126, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .total-label {
+      color: #e2e8f0;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    
+    .total-valor {
+      color: #00c97e;
+      font-size: 1.8rem;
+      font-weight: 800;
+      user-select: all;
+    }
+    
+    /* 📝 FORMULARIO */
+    .formulario-container {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 18px;
+      border-top: 5px solid #0ea5e9;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .formulario-titulo {
+      color: #0ea5e9;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .nota-importante {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 4px solid #f59e0b;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      color: #cbd5e0;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    
+    .nota-importante strong {
+      color: #f59e0b;
+    }
+    
+    /* 💡 NOTIFICACIÓN DE COPIADO */
+    .notificacion-copiado {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #00c97e, #00a86b);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 10px;
+      font-weight: 600;
+      z-index: 10000;
+      box-shadow: 0 8px 25px rgba(0, 201, 126, 0.4);
+      animation: slideIn 0.3s ease;
+      display: none;
+    }
+    
+    @keyframes slideIn {
+      from { transform: translateX(400px); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(400px); opacity: 0; }
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .resumen-pedido {
+        padding: 20px;
+      }
+      
+      .producto-resumen-item {
+        grid-template-columns: 50px 1fr;
+        gap: 10px;
+      }
+      
+      .producto-resumen-precio {
+        grid-column: 2;
+        text-align: right;
+      }
+      
+      .formulario-container {
+        padding: 20px;
+      }
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .resumen-pedido, .formulario-container {
+      animation: fadeIn 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📋 Reportar Pago</h1>
+      <p>Completa tus datos para procesar tu pedido</p>
+    </div>
+    
+    <!-- 🎁 BANNER DE REFERIDO -->
+    <div id="banner-referido" style="display: none;">
+      <p>
+        ✨ <strong>¡Viniste con código de referido!</strong> 
+        Tu código: <span id="codigo-banner"></span>
+        <br>
+        <span style="font-size: 0.85rem; color: #a0aec0;">Asegúrate de incluirlo en el formulario para que la persona que te refirió reciba su comisión</span>
+      </p>
+    </div>
+    
+    <!-- 📦 RESUMEN DEL PEDIDO (solo si viene del carrito) -->
+    <div id="resumen-pedido-container" style="display: none;"></div>
+    
+    <!-- 📝 FORMULARIO BITRIX24 -->
+    <div class="formulario-container">
+      <h2 class="formulario-titulo">Información de tu Pago</h2>
+      
+      <div class="nota-importante">
+        <strong>⚠️ Importante:</strong> Asegúrate de subir tu comprobante de pago y copiar la información de arriba (si viene del carrito). Sin estos datos no podremos procesar tu pedido.
+      </div>
+      
+      <!-- 🔥 FORMULARIO BITRIX24 -->
+      <div id="formulario-bitrix">
+        <script data-b24-form="inline/71/626h1m" data-skip-moving="true">(function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'https://cdn.bitrix24.es/b16375491/crm/form/loader_71.js');</script>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Notificación de copiado -->
+  <div id="notificacion-copiado" class="notificacion-copiado">✅ Copiado al portapapeles</div>
+
+  <script>
+    // 🎁 SISTEMA DE REFERIDOS
+    function inicializarReferidos() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const refCode = urlParams.get('ref');
+
+      if (refCode) {
+        localStorage.setItem('codigoReferido', refCode);
+      }
+      
+      const codigoGuardado = localStorage.getItem('codigoReferido');
+
+      if (codigoGuardado) {
+        document.getElementById('banner-referido').style.display = 'block';
+        document.getElementById('codigo-banner').textContent = codigoGuardado;
+      }
+    }
+
+    // 🛒 DETECTAR PEDIDO DEL CARRITO
+    window.addEventListener('DOMContentLoaded', function() {
+      inicializarReferidos();
+      
+      const pedido = JSON.parse(sessionStorage.getItem('pedidoCarrito') || 'null');
+      
+      if (pedido) {
+        mostrarResumenPedido(pedido);
+      }
+    });
+
+    function mostrarResumenPedido(pedido) {
+      const container = document.getElementById('resumen-pedido-container');
+      
+      const productosHTML = pedido.productos.map(item => `
+        <div class="producto-resumen-item">
+          <img src="${item.imagen || 'https://via.placeholder.com/60'}" 
+               alt="${item.nombre}" 
+               class="producto-resumen-img">
+          <div class="producto-resumen-info">
+            <div class="producto-resumen-nombre">${item.nombre}</div>
+            <div class="producto-resumen-cantidad">Cantidad: ${item.cantidad}</div>
+          </div>
+          <div class="producto-resumen-precio">$${item.precio * item.cantidad} USD</div>
+        </div>
+      `).join('');
+      
+      container.innerHTML = `
+        <div class="resumen-pedido">
+          <h2 class="resumen-titulo">🛒 Resumen de tu Pedido</h2>
+          
+          <div class="codigo-pedido">
+            <div>📋 <strong>Código de Pedido:</strong></div>
+            <div class="codigo-copiable" onclick="copiarTexto('${pedido.codigo || 'N/A'}', this)">
+              <span class="codigo-texto">${pedido.codigo || 'N/A'}</span>
+              <button class="btn-copiar">📋 Copiar</button>
+            </div>
+            ${pedido.codigoReferido ? `
+              <div style="margin-top: 15px;">🎁 <strong>Código de Referido:</strong></div>
+              <div class="codigo-copiable" onclick="copiarTexto('${pedido.codigoReferido}', this)">
+                <span class="codigo-texto">${pedido.codigoReferido}</span>
+                <button class="btn-copiar">📋 Copiar</button>
+              </div>
+            ` : ''}
+          </div>
+          
+          <div class="productos-resumen">
+            ${productosHTML}
+          </div>
+          
+          <div class="total-pedido">
+            <span class="total-label">Total a Pagar:</span>
+            <span class="total-valor" onclick="copiarTexto('$${pedido.total} USD')">$${pedido.total} USD</span>
+          </div>
+        </div>
+      `;
+      
+      container.style.display = 'block';
+    }
+
+    // 📋 FUNCIÓN PARA COPIAR AL PORTAPAPELES
+    function copiarTexto(texto, elemento) {
+      navigator.clipboard.writeText(texto).then(() => {
+        mostrarNotificacionCopiado();
+        
+        // Cambiar temporalmente el texto del botón
+        if (elemento) {
+          const boton = elemento.querySelector('.btn-copiar');
+          if (boton) {
+            const textoOriginal = boton.textContent;
+            boton.textContent = '✅ ¡Copiado!';
+            setTimeout(() => {
+              boton.textContent = textoOriginal;
+            }, 2000);
+          }
+        }
+      }).catch(err => {
+        console.error('Error al copiar:', err);
+      });
+    }
+
+    function mostrarNotificacionCopiado() {
+      const notif = document.getElementById('notificacion-copiado');
+      notif.style.display = 'block';
+      
+      setTimeout(() => {
+        notif.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => {
+          notif.style.display = 'none';
+          notif.style.animation = 'slideIn 0.3s ease';
+        }, 300);
+      }, 2000);
+    }
+  </script>
+</body>
+</html>
+```
+
+---
+
+## ✅ ¡Listo! El código está completo con:
+
+1. ✅ **Banner de referido** (si el usuario tiene código guardado)
+2. ✅ **Resumen del pedido del carrito** (con botones de copiar)
+3. ✅ **Tu formulario de Bitrix24** integrado
+4. ✅ **Sistema de notificaciones** al copiar
+
+---
+
+## 🎯 Cómo funciona:
+
+### **Escenario 1: Usuario con referido SIN carrito**
+```
+/reportapago/?ref=CODIGO123
+         ↓
+Banner verde: "Tu código: CODIGO123"
+         ↓
+Formulario Bitrix24 (normal)
+```
+
+### **Escenario 2: Usuario CON carrito**
+```
+/mi-carrito/ → Solicita link → Paga → /reportapago/
+         ↓
+Resumen del pedido con:
+- Código: CEL20250119... [📋 Copiar]
+- Productos listados
+- Total: $1,500 USD (clickeable)
+         ↓
+Formulario Bitrix24 (copia manual del resumen)
+```
+
+### **Escenario 3: Usuario con referido Y carrito**
+```
+Banner: "Tu código: CODIGO123"
+         +
+Resumen del pedido completo
+         +
+Formulario Bitrix24
