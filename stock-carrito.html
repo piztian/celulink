@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CeluLink | Catálogo con Carrito 🛒</title>
+  <style>
+    *{margin: 0;
+      padding: 0;
+      box-sizing: border-box;}body{font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      min-height: 100vh;
+      padding-top: 20px;
+      color: #e2e8f0;}.header{text-align: center;
+      margin-bottom: 40px;
+      padding: 0 20px;}.header h1{font-size: 2.5rem;
+      background: linear-gradient(135deg, #00c97e, #0ea5e9, #ff2e2e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      font-weight: 800;}.header-flag{height: 45px;
+      width: 45px;
+      display: inline-block;
+      margin: 0 10px;
+      vertical-align: middle;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));}.header-flag:hover{transform: scale(1.15) rotate(-5deg);
+      filter: drop-shadow(0 6px 12px rgba(0, 201, 126, 0.4));}.header p{color: #cbd5e0;
+      font-size: 1.1rem;
+      margin-bottom: 5px;}.flag-line{font-size: 1rem;
+      color: #0ea5e9;
+      font-weight: 600;
+      letter-spacing: 1px;}
+      
+    /* 📝 BANNER INFORMATIVO */
+    .info-compra{max-width: 1200px;
+      margin: 0 auto 40px;
+      padding: 0 20px;}.info-card{background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(0, 201, 126, 0.1));
+      border: 2px solid rgba(0, 201, 126, 0.3);
+      border-radius: 16px;
+      padding: 30px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;}.info-opcion{background: rgba(15, 23, 42, 0.6);
+      border-radius: 12px;
+      padding: 20px;
+      border-left: 4px solid #00c97e;
+      transition: all 0.3s ease;}.info-opcion:hover{background: rgba(15, 23, 42, 0.8);
+      border-left-color: #0ea5e9;}.info-opcion.multiple{border-left-color: #f59e0b;}.info-opcion.multiple:hover{border-left-color: #0ea5e9;}.info-numero{background: linear-gradient(135deg, #00c97e, #00a86b);
+      color: #fff;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0, 201, 126, 0.4);}.info-opcion.multiple .info-numero{background: linear-gradient(135deg, #f59e0b, #d97706);
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);}.info-titulo{color: #e2e8f0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 10px;}.info-badge{display: inline-block;
+      background: rgba(0, 201, 126, 0.2);
+      color: #00c97e;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-left: 10px;}.info-opcion.multiple .info-badge{background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;}.info-descripcion{color: #cbd5e0;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin-bottom: 15px;}.info-pasos{list-style: none;
+      padding: 0;}.info-pasos li{color: #94a3b8;
+      font-size: 0.95rem;
+      padding: 8px 0;
+      padding-left: 25px;
+      position: relative;}.info-pasos li:before{content: "✓";
+      position: absolute;
+      left: 0;
+      color: #00c97e;
+      font-weight: 700;}.info-opcion.multiple .info-pasos li:before{color: #f59e0b;}@media (max-width: 768px){.info-card{grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 20px;}}
+      
+    /* 🛒 ESTILOS DEL CARRITO FLOTANTE */
+    .carrito-flotante{position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #00c97e, #00a86b);
+      color: #fff;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(0, 201, 126, 0.4);
+      transition: all 0.3s ease;
+      border: 3px solid rgba(255, 255, 255, 0.2);}.carrito-flotante:hover{transform: scale(1.1);
+      box-shadow: 0 12px 35px rgba(0, 201, 126, 0.6);}.carrito-badge{position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #ff2e2e;
+      color: #fff;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border: 2px solid #0f172a;}.carrito-flotante.vacio{opacity: 0.5;
+      pointer-events: none;}
+      
+    .pasos-container{display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 50px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px;}.paso-link{text-decoration: none;
+      color: inherit;
+      flex: 1;
+      min-width: 220px;
+      max-width: 280px;}.paso{display: flex;
+      align-items: center;
+      gap: 15px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+      padding: 18px 24px;
+      border-radius: 14px;
+      border-left: 5px solid #00c97e;
+      color: #e2e8f0;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      cursor: pointer;}.paso-link:hover .paso{transform: translateY(-6px);
+      border-left-color: #ff2e2e;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(51, 65, 85, 0.95));
+      box-shadow: 0 12px 30px rgba(0, 201, 126, 0.25), 0 0 20px rgba(255, 46, 46, 0.1);
+      border-color: rgba(255, 46, 46, 0.3);}.paso-numero{color: #fff;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      min-width: 45px;
+      font-family: 'Arial', sans-serif;}.paso-link:nth-child(1) .paso-numero{background: linear-gradient(135deg, #00c97e, #00a86b);
+      box-shadow: 0 4px 15px rgba(0, 201, 126, 0.4);}.paso-link:nth-child(2) .paso-numero{background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);}.paso-link:nth-child(3) .paso-numero{background: linear-gradient(135deg, #ff2e2e, #dc2626);
+      box-shadow: 0 4px 15px rgba(255, 46, 46, 0.4);}.paso-link:nth-child(4) .paso-numero{background: linear-gradient(135deg, #f59e0b, #d97706);
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);}.filtro-container{display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px;}.btn-filtro{background: linear-gradient(135deg, rgba(51, 65, 85, 0.6), rgba(71, 85, 105, 0.6));
+      color: #cbd5e0;
+      border: 2px solid #475569;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);}.btn-filtro:hover{background: linear-gradient(135deg, rgba(71, 85, 105, 0.8), rgba(100, 116, 139, 0.8));
+      border-color: #0ea5e9;
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(14, 165, 233, 0.2);}.btn-filtro.activo{background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      border-color: #0ea5e9;
+      color: #fff;
+      box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);}main.catalogo-container{max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 60px;}.catalogo-grid{display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 30px;
+      animation: fadeIn 1s ease-in-out;}@keyframes fadeIn{from{opacity: 0;
+        transform: translateY(20px);}to{opacity: 1;
+        transform: translateY(0);}}.producto-card{background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 18px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-top: 5px solid #00c97e;
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      text-decoration: none;
+      color: inherit;
+      border: 1px solid rgba(14, 165, 233, 0.1);
+      position: relative;
+      overflow: hidden;}.producto-card::before{content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s ease;
+      z-index: 1;}.producto-card:hover::before{left: 100%;}.producto-card:hover{transform: translateY(-12px);
+      box-shadow: 0 15px 45px rgba(0, 201, 126, 0.25);
+      border-top-color: #ff2e2e;
+      background: linear-gradient(135deg, #334155 0%, #475569 100%);
+      border-color: rgba(255, 46, 46, 0.3);}.producto-img-container{width: 100%;
+      height: 240px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      border-radius: 12px;
+      transition: transform 0.3s ease;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.5), rgba(30, 41, 59, 0.5));
+      border: 1px solid rgba(14, 165, 233, 0.1);
+      position: relative;
+      z-index: 2;
+      overflow: hidden;}.producto-img-container:hover{transform: scale(1.08);}.producto-img{width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 12px;}
+      
+    .carousel-container{position: relative;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;}.carousel-slides{display: flex;
+      transition: transform 0.4s ease-in-out;
+      height: 100%;}.carousel-slide{min-width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;}.carousel-slide img{width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 12px;}.carousel-arrow{position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 201, 126, 0.8);
+      color: white;
+      border: none;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);}.carousel-arrow:hover{background: rgba(0, 201, 126, 1);
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 4px 12px rgba(0, 201, 126, 0.5);}.carousel-arrow.prev{left: 10px;}.carousel-arrow.next{right: 10px;}.carousel-dots{position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 10;}.carousel-dot{width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(0, 201, 126, 0.3);}.carousel-dot.active{background: #00c97e;
+      width: 24px;
+      border-radius: 4px;
+      box-shadow: 0 0 8px rgba(0, 201, 126, 0.6);}.carousel-dot:hover{background: rgba(0, 201, 126, 0.7);}
+      
+    .producto-nombre{font-weight: 700;
+      color: #e2e8f0;
+      font-size: 1.25rem;
+      text-align: center;
+      margin-bottom: 10px;
+      text-transform: capitalize;
+      position: relative;
+      z-index: 2;}.producto-descripcion{color: #cbd5e0;
+      font-size: 0.95rem;
+      text-align: center;
+      margin-bottom: 12px;
+      min-height: 50px;
+      position: relative;
+      z-index: 2;}.producto-casos-uso{color: #00c97e;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 18px;
+      font-style: italic;
+      line-height: 1.5;
+      position: relative;
+      z-index: 2;
+      font-weight: 600;}.producto-precio{font-size: 1.4rem;
+      font-weight: 800;
+      color: #00c97e;
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 2;
+      letter-spacing: 0.5px;}.producto-colores{color: #cbd5e0;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-bottom: 15px;
+      font-weight: 600;
+      position: relative;
+      z-index: 2;}.botones-container{display: flex;
+      gap: 12px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 2;}
+      
+    /* 🛒 BOTÓN AGREGAR AL CARRITO */
+    .btn-carrito{background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      min-width: 130px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);}.btn-carrito:hover{background: linear-gradient(135deg, #d97706, #f59e0b);
+      transform: scale(1.06);
+      box-shadow: 0 8px 25px rgba(245, 158, 11, 0.5);}.btn-carrito:active{transform: scale(0.95);}
+      
+    .btn-pago{background: linear-gradient(135deg, #00c97e, #00a86b);
+      color: #fff;
+      padding: 12px 16px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      min-width: 140px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 201, 126, 0.3);
+      line-height: 1.3;}.btn-pago:hover{background: linear-gradient(135deg, #00a86b, #00c97e);
+      transform: scale(1.06);
+      box-shadow: 0 8px 25px rgba(0, 201, 126, 0.5);}.btn-asesor{background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      min-width: 130px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);}.btn-asesor:hover{background: linear-gradient(135deg, #0284c7, #0ea5e9);
+      transform: scale(1.06);
+      box-shadow: 0 8px 25px rgba(14, 165, 233, 0.5);}#loader{text-align: center;
+      color: #0ea5e9;
+      font-size: 1.2rem;
+      font-weight: 600;
+      padding: 60px 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 300px;}#loader video{border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 201, 126, 0.3);}
+      
+    /* 🎉 ANIMACIÓN DE AGREGADO AL CARRITO */
+    @keyframes agregado{0%{transform: scale(1);}50%{transform: scale(1.2);}100%{transform: scale(1);}}
+      
+    .agregado-animacion{animation: agregado 0.3s ease;}
+      
+    @media (max-width: 768px){.header h1{font-size: 2rem;}.pasos-container{gap: 10px;}.paso{min-width: 160px;
+        padding: 14px 18px;
+        font-size: 0.9rem;}.paso-numero{width: 40px;
+        height: 40px;
+        font-size: 1.1rem;}.producto-img-container{height: 200px;}.producto-nombre{font-size: 1.1rem;}.btn-pago, .btn-asesor, .btn-carrito{font-size: 0.85rem;
+        padding: 10px 14px;
+        min-width: 110px;}.carousel-arrow{width: 30px;
+        height: 30px;
+        font-size: 16px;}.carrito-flotante{width: 55px;
+        height: 55px;
+        bottom: 20px;
+        right: 20px;}}@media (max-width: 600px){.header h1{font-size: 1.8rem;}.pasos-container{gap: 8px;}.paso{min-width: 140px;
+        padding: 12px 14px;
+        font-size: 0.8rem;}.paso-numero{width: 36px;
+        height: 36px;
+        font-size: 1rem;}.producto-img-container{height: 180px;}.catalogo-grid{grid-template-columns: 1fr;}.btn-pago, .btn-asesor, .btn-carrito{font-size: 0.8rem;
+        padding: 10px 12px;}.carousel-arrow{width: 28px;
+        height: 28px;
+        font-size: 14px;}}
+  </style>
+</head>
+<body>
+  <!-- 🛒 CARRITO FLOTANTE -->
+  <div class="carrito-flotante vacio" id="carrito-flotante" onclick="irAlCarrito()">
+    🛒
+    <span class="carrito-badge" id="carrito-badge">0</span>
+  </div>
+
+  <!-- 📱 HEADER -->
+  <div class="header">
+    <h1><img src="https://github.com/piztian/celulink/blob/main/fotos/MX%20icon.png?raw=true" alt="México" class="header-flag"> CELULINK 📱 <img src="https://github.com/piztian/celulink/blob/main/fotos/US%20icon.png?raw=true" alt="USA" class="header-flag"></h1>
+    <p class="flag-line">Compra desde EE.UU. y recibe en México</p>
+  </div>
+
+  <!-- 📝 BANNER INFORMATIVO DE OPCIONES DE COMPRA -->
+  <div class="info-compra">
+    <div class="info-card">
+      <div class="info-opcion">
+        <div class="info-numero">1</div>
+        <h3 class="info-titulo">
+          Un Solo Equipo
+          <span class="info-badge">⚡ MÁS RÁPIDO</span>
+        </h3>
+        <p class="info-descripcion">
+          ¿Solo necesitas un celular? Cada producto tiene su link de pago directo. ¡Es la forma más rápida y sencilla!
+        </p>
+        <ul class="info-pasos">
+          <li>Encuentra tu equipo</li>
+          <li>Click en "Link Directo de Pago"</li>
+          <li>Paga como tu prefieras</li> 
+          <li>Reporta tu pago, y datos de envio</li>
+        </ul>
+      </div>
+      
+      <div class="info-opcion multiple">
+        <div class="info-numero">2+</div>
+        <h3 class="info-titulo">
+          Varios Equipos
+          <span class="info-badge">🛒 CARRITO</span>
+        </h3>
+        <p class="info-descripcion">
+          ¿Quieres comprar 2 o más celulares? Usa el carrito de compras y te generamos un link personalizado.
+        </p>
+        <ul class="info-pasos">
+          <li>Agrega productos al carrito</li>
+          <li>Revisa tu pedido completo</li>
+          <li>Solicita tu link personalizado</li>
+          <li>Paga todo junto</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📱 Sección de pasos -->
+  <div class="pasos-container">
+    <a href="https://www.celulink.mx/stock/" class="paso-link">
+      <div class="paso">
+        <div class="paso-numero">1</div>
+        <div>Elige el equipo</div>
+      </div>
+    </a>
+    <a href="https://www.celulink.mx/payment/" class="paso-link">
+      <div class="paso">
+        <div class="paso-numero">2</div>
+        <div>Paga y reporta el pago</div>
+      </div>
+    </a>
+    <a href="https://www.celulink.mx/reportapago/" class="paso-link">
+      <div class="paso">
+        <div class="paso-numero">3</div>
+        <div>Llena datos de destino</div>
+      </div>
+    </a>
+    <a href="https://www.celulink.mx/" class="paso-link">
+      <div class="paso">
+        <div class="paso-numero">4</div>
+        <div>Recibe en México</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- 📱 Contenedor principal -->
+  <main class="catalogo-container">
+    <div id="loader">
+      <video width="150" height="150" autoplay loop muted>
+        <source src="https://raw.githubusercontent.com/piztian/celulink/main/CelulinkGif.mp4" type="video/mp4">
+        Tu navegador no soporta videos
+      </video>
+    </div>
+    <div id="filtros" class="filtro-container"></div>
+    <div id="catalogo" class="catalogo-grid"></div>
+  </main>
+
+  <script>
+    const SHEET_ID = "1mGPMOWBdtD5q4qAFRlqo6z0A5jQ4cpw_lB3DH0D6qgQ";
+    const SHEET_NAME = "Productos";
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+    const WHATSAPP_LINK = "https://wa.link/i0j8lh";
+    const TIEMPO_MINIMO_LOADER = 3000;
+    const AUTOPLAY_INTERVAL = 3000;
+    let tiempoInicio = Date.now();
+    const carruselIntervals = {};
+
+    // 🛒 SISTEMA DE CARRITO
+    let carrito = JSON.parse(localStorage.getItem('carritoCompras')) || [];
+
+    function actualizarCarritoUI() {
+      const badge = document.getElementById('carrito-badge');
+      const carritoFlotante = document.getElementById('carrito-flotante');
+      const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+      
+      badge.textContent = totalItems;
+      
+      if (totalItems > 0) {
+        carritoFlotante.classList.remove('vacio');
+      } else {
+        carritoFlotante.classList.add('vacio');
+      }
+    }
+
+    function agregarAlCarrito(producto) {
+      const productoExistente = carrito.find(item => item.archivo === producto.archivo);
+      
+      if (productoExistente) {
+        productoExistente.cantidad++;
+      } else {
+        carrito.push({
+          archivo: producto.archivo,
+          nombre: producto.nombre,
+          precio: producto.precio,
+          imagen: producto.imagen,
+          cantidad: 1
+        });
+      }
+      
+      localStorage.setItem('carritoCompras', JSON.stringify(carrito));
+      actualizarCarritoUI();
+      
+      // Animación
+      const carritoFlotante = document.getElementById('carrito-flotante');
+      carritoFlotante.classList.add('agregado-animacion');
+      setTimeout(() => {
+        carritoFlotante.classList.remove('agregado-animacion');
+      }, 300);
+      
+      // Feedback visual
+      mostrarNotificacion('✅ Producto agregado al carrito');
+    }
+
+    function mostrarNotificacion(mensaje) {
+      const notif = document.createElement('div');
+      notif.textContent = mensaje;
+      notif.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #00c97e, #00a86b);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 10px;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 8px 25px rgba(0, 201, 126, 0.4);
+        animation: slideIn 0.3s ease;
+      `;
+      document.body.appendChild(notif);
+      
+      setTimeout(() => {
+        notif.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notif.remove(), 300);
+      }, 2000);
+    }
+
+    function irAlCarrito() {
+      window.location.href = '/mi-carrito/';
+    }
+
+    function limpiarNombreArchivo(nombre){
+      return nombre ? nombre.replace(/\.[^/.]+$/, "") : "";
+    }
+
+    function obtenerImagenes(producto) {
+      const imagenes = [];
+      if (producto["url_imagen"]) {
+        const urls = producto["url_imagen"].split(/[,;\n]+/).map(url => url.trim()).filter(url => url);
+        imagenes.push(...urls);
+      }
+      for (let i = 2; i <= 10; i++) {
+        const campo = `url_imagen_${i}`;
+        if (producto[campo] && producto[campo].trim()) {
+          imagenes.push(producto[campo].trim());
+        }
+      }
+      return imagenes.filter(img => img && img !== "");
+    }
+
+    function crearCarrusel(imagenes, productoId) {
+      if (imagenes.length === 0) {
+        return '<div style="color: #a0aec0; text-align: center;">Sin imagen</div>';
+      }
+      if (imagenes.length === 1) {
+        return `<img class="producto-img" src="${imagenes[0]}" alt="Producto" />`;
+      }
+      const slidesHTML = imagenes.map((img, index) => 
+        `<div class="carousel-slide"><img src="${img}" alt="Imagen ${index + 1}" /></div>`
+      ).join('');
+      const dotsHTML = imagenes.map((_, index) => 
+        `<div class="carousel-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`
+      ).join('');
+      return `
+        <div class="carousel-container" data-carousel-id="${productoId}" onclick="event.stopPropagation();">
+          <div class="carousel-slides" data-current-slide="0">${slidesHTML}</div>
+          <button class="carousel-arrow prev" onclick="navegarCarrusel('${productoId}', -1, true); event.stopPropagation(); event.preventDefault();">‹</button>
+          <button class="carousel-arrow next" onclick="navegarCarrusel('${productoId}', 1, true); event.stopPropagation(); event.preventDefault();">›</button>
+          <div class="carousel-dots">${dotsHTML}</div>
+        </div>
+      `;
+    }
+
+    function iniciarAutoplay(productoId) {
+      if (carruselIntervals[productoId]) clearInterval(carruselIntervals[productoId]);
+      carruselIntervals[productoId] = setInterval(() => {
+        navegarCarrusel(productoId, 1, false);
+      }, AUTOPLAY_INTERVAL);
+    }
+
+    function detenerAutoplay(productoId) {
+      if (carruselIntervals[productoId]) clearInterval(carruselIntervals[productoId]);
+    }
+
+    function reiniciarAutoplay(productoId) {
+      detenerAutoplay(productoId);
+      setTimeout(() => iniciarAutoplay(productoId), 5000);
+    }
+
+    window.navegarCarrusel = function(productoId, direccion, esManual = false) {
+      const container = document.querySelector(`[data-carousel-id="${productoId}"]`);
+      if (!container) return;
+      const slides = container.querySelector('.carousel-slides');
+      const dots = container.querySelectorAll('.carousel-dot');
+      const totalSlides = dots.length;
+      let currentSlide = parseInt(slides.dataset.currentSlide);
+      currentSlide += direccion;
+      if (currentSlide < 0) currentSlide = totalSlides - 1;
+      if (currentSlide >= totalSlides) currentSlide = 0;
+      slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+      slides.dataset.currentSlide = currentSlide;
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentSlide);
+      });
+      if (esManual) reiniciarAutoplay(productoId);
+    };
+
+    async function cargarProductos(){
+      try{
+        const response = await fetch(SHEET_URL);
+        const text = await response.text();
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+        const headers = json.table.cols.map(col => col.label);
+        const data = json.table.rows.map(row => {
+          let obj = {};
+          headers.forEach((header, i) => {
+            obj[header] = row.c[i]?.v || "";
+          });
+          return obj;
+        });
+        window.todosProductos = data;
+        crearFiltros(data);
+        const productosConPrecio = data.filter(p => p["dlls"]);
+        const tiempoTranscurrido = Date.now() - tiempoInicio;
+        const tiempoRestante = Math.max(0, TIEMPO_MINIMO_LOADER - tiempoTranscurrido);
+        setTimeout(() => {
+          mostrarProductos(productosConPrecio);
+        }, tiempoRestante);
+      } catch (err){
+        console.error("Error cargando datos:", err);
+        document.getElementById("loader").innerHTML = '<p style="color:#a0aec0; font-size:1.1rem;">❌ Error al cargar los productos</p>';
+      }
+    }
+
+    function crearFiltros(productos){
+      const marcas = new Set();
+      productos.forEach(p => {
+        const nombre = limpiarNombreArchivo(p["archivo"]);
+        const marca = nombre.split(" ")[0];
+        if(marca) marcas.add(marca);
+      });
+      const marcasArray = Array.from(marcas).sort();
+      const filtrosContainer = document.getElementById("filtros");
+      filtrosContainer.innerHTML = '<button class="btn-filtro activo" data-filtro="todos">✓ Todos</button>';
+      marcasArray.forEach(marca => {
+        const btn = document.createElement("button");
+        btn.className = "btn-filtro";
+        btn.textContent = marca;
+        btn.dataset.filtro = marca;
+        btn.addEventListener("click", () => filtrarPorMarca(marca));
+        filtrosContainer.appendChild(btn);
+      });
+      document.querySelector('[data-filtro="todos"]').addEventListener("click", () => filtrarPorMarca("todos"));
+    }
+
+    function filtrarPorMarca(marca){
+      Object.keys(carruselIntervals).forEach(id => detenerAutoplay(id));
+      const botones = document.querySelectorAll(".btn-filtro");
+      botones.forEach(btn => btn.classList.remove("activo"));
+      document.querySelector(`[data-filtro="${marca}"]`).classList.add("activo");
+      if(marca === "todos"){
+        mostrarProductos(window.todosProductos);
+      } else {
+        const filtrados = window.todosProductos.filter(p => {
+          const nombre = limpiarNombreArchivo(p["archivo"]);
+          return nombre.split(" ")[0] === marca;
+        });
+        const filtradosConPrecio = filtrados.filter(p => p["dlls"]);
+        mostrarProductos(filtradosConPrecio);
+      }
+    }
+
+    function mostrarProductos(productos){
+      const contenedor = document.getElementById("catalogo");
+      document.getElementById("loader").style.display = "none";
+      if (!productos.length){
+        contenedor.innerHTML = '<p style="text-align:center;color:#a0aec0; grid-column: 1 / -1; font-size: 1.1rem;">🔍 No hay coincidencias</p>';
+        return;
+      }
+      contenedor.innerHTML = productos.map((p, index) => {
+        const nombre = limpiarNombreArchivo(p["archivo"]);
+        const archivo = p["archivo"];
+        const imagenes = obtenerImagenes(p);
+        const caracteristicas = p["Caracteristicas"];
+        const casoUso = p["Ideal_para"] || "";
+        const precioRaw = p["dlls"];
+        const linkPago = p["url de pago"] || "";
+        const linkAsesor = p["link_asesor"] || WHATSAPP_LINK;
+        const coloresDisponibles = p["Colores"] || "";
+        const productoId = `producto-${index}`;
+        const esAgotado = isNaN(parseFloat(precioRaw)) || precioRaw.toString().toLowerCase().includes("agotado");
+        const precioNumerico = esAgotado ? 0 : Math.ceil(parseFloat(precioRaw));
+        const precioMostrar = esAgotado ? "AGOTADO" : `💵 ${precioNumerico}USD`;
+        const colorPrecio = esAgotado ? "#ff2e2e" : "#00c97e";
+        const mostrarBotonPagar = !esAgotado && linkPago && linkPago.trim() !== "" && linkPago !== "No encontrado";
+        const botonPago = mostrarBotonPagar ? `<a href="${linkPago}" target="_blank" class="btn-pago">💳 Link Directo de Pago</a>` : "";
+        const opacity = esAgotado ? "opacity: 0.7; filter: grayscale(0.3);" : "";
+        
+        // 🛒 BOTÓN DE CARRITO (solo si NO está agotado)
+        const botonCarrito = !esAgotado ? `
+          <button class="btn-carrito" onclick="agregarAlCarrito({
+            archivo: '${archivo}',
+            nombre: '${nombre}',
+            precio: ${precioNumerico},
+            imagen: '${imagenes[0] || ''}'
+          }); event.stopPropagation();">
+            🛒 Agregar
+          </button>
+        ` : "";
+
+        return `
+          <div class="producto-card" style="${opacity}">
+            <a href="https://www.celulink.mx/details/?archivo=${encodeURIComponent(archivo)}" style="width:100%; text-decoration:none; color:inherit;">
+              <div class="producto-img-container">
+                ${crearCarrusel(imagenes, productoId)}
+              </div>
+            </a>
+            <h3 class="producto-nombre">${nombre}</h3>
+            <p class="producto-descripcion">${caracteristicas || ""}</p>
+            ${casoUso ? `<p class="producto-casos-uso">✓ ${casoUso}</p>` : ""}
+            <p class="producto-precio" style="color: ${colorPrecio};">${precioMostrar}</p>
+            ${coloresDisponibles ? `<div class="producto-colores">Colores: ${coloresDisponibles}</div>` : ""}
+            <div class="botones-container">
+              ${botonCarrito}
+              ${botonPago}
+              <a href="${linkAsesor}" target="_blank" class="btn-asesor">📞 Asesor</a>
+            </div>
+          </div>
+        `;
+      }).join("");
+      
+      productos.forEach((p, index) => {
+        const imagenes = obtenerImagenes(p);
+        if (imagenes.length > 1) {
+          const productoId = `producto-${index}`;
+          iniciarAutoplay(productoId);
+        }
+      });
+      
+      document.querySelectorAll('.carousel-dot').forEach(dot => {
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          const container = dot.closest('.carousel-container');
+          const productoId = container.dataset.carouselId;
+          const targetIndex = parseInt(dot.dataset.index);
+          const slides = container.querySelector('.carousel-slides');
+          const currentIndex = parseInt(slides.dataset.currentSlide);
+          const direction = targetIndex - currentIndex;
+          navegarCarrusel(productoId, direction, true);
+        });
+      });
+      
+      document.querySelectorAll('.carousel-container').forEach(container => {
+        const productoId = container.dataset.carouselId;
+        container.addEventListener('mouseenter', () => detenerAutoplay(productoId));
+        container.addEventListener('mouseleave', () => iniciarAutoplay(productoId));
+      });
+    }
+
+    // Inicializar
+    actualizarCarritoUI();
+    cargarProductos();
+    
+    // Agregar estilos para las animaciones
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes slideOut {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(400px); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>
+```
+
+---
+
+## ✅ Cambios implementados:
+
+### **1. Banner informativo nuevo:**
+- ✅ Dos opciones claramente diferenciadas
+- ✅ "Un Solo Equipo" marcado como "⚡ MÁS RÁPIDO"
+- ✅ "Varios Equipos" con badge "🛒 CARRITO"
+- ✅ Pasos explicados en cada opción
+
+### **2. Botón renombrado:**
+- Cambió de: `💳 Pagar`
+- A: `💳 Link Directo de Pago`
+
+### **3. Mensaje claro:**
+- Opción 1 = Rápido y directo (1 producto)
+- Opción 2+ = Carrito para múltiples productos
+
+---
+
+## 📱 Vista del banner:
+```
+┌─────────────────────────────────────────────────────┐
+│  [1] Un Solo Equipo        │  [2+] Varios Equipos   │
+│  ⚡ MÁS RÁPIDO             │  🛒 CARRITO             │
+│                            │                         │
+│  ¿Solo necesitas un        │  ¿Quieres comprar 2 o  │
+│  celular? Cada producto    │  más celulares? Usa el │
+│  tiene su link de pago     │  carrito de compras...  │
+│  directo...                │                         │
+│                            │                         │
+│  ✓ Encuentra tu equipo     │  ✓ Agrega productos     │
+│  ✓ Click en "Link Directo  │  ✓ Revisa tu pedido     │
+│  ✓ Paga y listo            │  ✓ Solicita link        │
+└─────────────────────────────────────────────────────┘
