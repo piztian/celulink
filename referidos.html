@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Programa de Referidos - CeluLink</title>
+  <style>
+    *{margin: 0;
+      padding: 0;
+      box-sizing: border-box;}body{font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      min-height: 100vh;
+      color: #e2e8f0;
+      line-height: 1.8;
+      padding: 20px;}header{background: rgba(15, 23, 42, 0.95);
+      border-bottom: 2px solid rgba(0, 201, 126, 0.3);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      margin-bottom: 40px;}.header-container{max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;}.logo{color: #00c97e;
+      font-weight: 800;
+      font-size: 1.5rem;
+      text-decoration: none;}.container{max-width: 1000px;
+      margin: 0 auto;}h1{font-size: 2.8rem;
+      background: linear-gradient(135deg, #00c97e, #0ea5e9, #ff2e2e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      text-align: center;}.intro-text{background: rgba(0, 201, 126, 0.05);
+      border-left: 4px solid #00c97e;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 40px;
+      text-align: center;
+      color: #cbd5e0;}.grid-principal{display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 40px;}@media (max-width: 768px){.grid-principal{grid-template-columns: 1fr;}}.card{background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 14px;
+      padding: 30px;
+      border: 1px solid rgba(14, 165, 233, 0.1);
+      border-top: 5px solid #00c97e;
+      transition: all 0.3s ease;}.card:hover{transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 201, 126, 0.15);
+      border-color: rgba(0, 201, 126, 0.3);}.card h2{color: #00c97e;
+      font-size: 1.5rem;
+      margin-bottom: 15px;}.card p{color: #cbd5e0;
+      margin-bottom: 15px;}/* Sección de Registro */
+    .registro-section{background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 14px;
+      padding: 30px;
+      border-top: 5px solid #0ea5e9;
+      margin-bottom: 40px;}.registro-section h2{color: #0ea5e9;
+      font-size: 1.5rem;
+      margin-bottom: 20px;}.form-group{margin-bottom: 20px;}label{display: block;
+      color: #cbd5e0;
+      font-weight: 600;
+      margin-bottom: 8px;}input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    select{width: 100%;
+      padding: 12px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 2px solid #475569;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 1rem;
+      transition: all 0.3s ease;}input:focus,
+    select:focus{outline: none;
+      border-color: #0ea5e9;
+      background: rgba(30, 41, 59, 0.8);}button{background: linear-gradient(135deg, #00c97e, #00a86b);
+      color: #fff;
+      padding: 14px 30px;
+      border-radius: 25px;
+      border: none;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;}button:hover{background: linear-gradient(135deg, #00a86b, #00c97e);
+      transform: scale(1.02);
+      box-shadow: 0 8px 20px rgba(0, 201, 126, 0.3);}button:disabled{background: #475569;
+      cursor: not-allowed;
+      transform: none;}/* Sección de Links */
+    .link-section{background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-radius: 14px;
+      padding: 30px;
+      border-top: 5px solid #ff2e2e;}.link-section h2{color: #ff2e2e;
+      font-size: 1.5rem;
+      margin-bottom: 20px;}.link-box{background: rgba(15, 23, 42, 0.6);
+      border: 2px solid #475569;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;}.link-text{color: #0ea5e9;
+      word-break: break-all;
+      flex: 1;
+      font-size: 0.9rem;}.btn-copy{background: #0ea5e9;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      width: auto;}.btn-copy:hover{background: #0284c7;}.success-message{background: rgba(0, 201, 126, 0.1);
+      border: 2px solid #00c97e;
+      color: #a7f3d0;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;}.error-message{background: rgba(255, 46, 46, 0.1);
+      border: 2px solid #ff2e2e;
+      color: #fca5a5;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;}.loading-message{background: rgba(14, 165, 233, 0.1);
+      border: 2px solid #0ea5e9;
+      color: #93c5fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;}.info-box{background: rgba(0, 201, 126, 0.1);
+      border-left: 4px solid #00c97e;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      color: #cbd5e0;}.info-box strong{color: #00c97e;}.comisiones-grid{display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 30px;}.comision-card{background: rgba(0, 201, 126, 0.1);
+      border: 2px solid #00c97e;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;}.comision-card h3{color: #00c97e;
+      font-size: 1.3rem;
+      margin-bottom: 5px;}.comision-card p{color: #cbd5e0;
+      font-size: 0.9rem;}footer{text-align: center;
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(0, 201, 126, 0.2);
+      color: #64748b;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <a href="https://www.celulink.mx/" class="logo">🔗 CeluLink</a>
+      <h1 style="margin: 0; font-size: 1.2rem; background: none; -webkit-text-fill-color: unset; color: #00c97e;">
+        Programa de Referidos
+      </h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Intro -->
+    <div class="intro-text">
+      <p>
+        ¡Gana dinero promocionando CeluLink! Comparte tu código de referido único y 
+        obtén comisiones por cada compra que realicen tus amigos.
+      </p>
+    </div>
+
+    <!-- Grid Principal: Cómo Funciona + Comisiones -->
+    <div class="grid-principal">
+      <!-- Cómo Funciona -->
+      <div class="card">
+        <h2>📖 ¿Cómo Funciona?</h2>
+        <p><strong>1. Regístrate:</strong> Proporciona tu información básica</p>
+        <p><strong>2. Obtén tu código:</strong> Recibirás un código único de referido</p>
+        <p><strong>3. Comparte:</strong> Envía tu enlace a amigos y familia</p>
+        <p><strong>4. Gana:</strong> Por cada compra con tu código, obtén comisión</p>
+        <p style="margin-top: 15px; color: #00c97e; font-weight: 600;">
+          💰 ¡Gana dinero pasivo sin límite!
+        </p>
+      </div>
+
+      <!-- Comisiones -->
+      <div class="card">
+        <h2>💵 Estructura de Comisiones</h2>
+        <div class="comisiones-grid">
+          <div class="comision-card">
+            <h3>5%</h3>
+            <p>Por cada compra</p>
+          </div>
+          <div class="comision-card">
+            <h3>+2%</h3>
+            <p>Si genera $500+</p>
+          </div>
+          <div class="comision-card">
+            <h3>+3%</h3>
+            <p>Si genera $1000+</p>
+          </div>
+        </div>
+        <p style="margin-top: 20px; color: #cbd5e0;">
+          Tus comisiones se acumulan y se pagan mensualmente vía PayPal o transferencia.
+        </p>
+      </div>
+    </div>
+
+    <!-- Sección de Registro -->
+    <div class="registro-section">
+      <h2>📝 Registro de Referidor</h2>
+      
+      <div class="success-message" id="successMessage">
+        ✅ ¡Registro exitoso! Revisa tu correo para ver tu código de referido.
+      </div>
+      
+      <div class="error-message" id="errorMessage">
+        ❌ Error al registrar. Por favor intenta de nuevo.
+      </div>
+      
+      <div class="loading-message" id="loadingMessage">
+        ⏳ Registrando tu información y generando tu código...
+      </div>
+
+      <form id="formRegistro">
+        <!-- 🆕 CAMPO APODO -->
+        <div class="form-group">
+          <label>Apodo / Nombre de Usuario *</label>
+          <input type="text" id="apodo" required placeholder="Ej: JuanGamer, MariaVentas" maxlength="15" pattern="[a-zA-Z0-9]+" title="Solo letras y números, sin espacios">
+          <small style="color: #94a3b8; font-size: 0.85rem;">Tu código será basado en este apodo. Solo letras y números.</small>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="form-group">
+            <label>Nombre Completo *</label>
+            <input type="text" id="nombre" required placeholder="Tu nombre completo">
+          </div>
+          <div class="form-group">
+            <label>Correo Electrónico *</label>
+            <input type="email" id="email" required placeholder="tu@email.com">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="form-group">
+            <label>Teléfono WhatsApp *</label>
+            <input type="text" id="telefono" required placeholder="+52 1234567890">
+          </div>
+          <div class="form-group">
+            <label>País *</label>
+            <select id="pais" required>
+              <option value="">Selecciona tu país</option>
+              <option value="México">México</option>
+              <option value="EE.UU">EE.UU</option>
+              <option value="España">España</option>
+              <option value="Colombia">Colombia</option>
+              <option value="Argentina">Argentina</option>
+              <option value="Chile">Chile</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <div class="form-group">
+            <label>Método de Pago (Comisiones) *</label>
+            <select id="metodoPago" required>
+              <option value="">Selecciona método</option>
+              <option value="PayPal">PayPal</option>
+              <option value="Transferencia Bancaria">Transferencia Bancaria</option>
+              <option value="Crypto">Criptomonedas</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Red Social Principal (opcional)</label>
+            <select id="redSocial">
+              <option value="">Selecciona red social</option>
+              <option value="Instagram">Instagram</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Twitter">Twitter</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Otra">Otra</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="terminos" required>
+            <span style="color: #cbd5e0; margin-left: 5px;">
+              Acepto los términos y condiciones del programa
+            </span>
+          </label>
+        </div>
+
+        <button type="submit" id="btnSubmit">🚀 Generar Mi Código de Referido</button>
+      </form>
+    </div>
+
+    <!-- Sección de Links -->
+    <div class="link-section" id="linkSection" style="display: none; margin-top: 40px;">
+      <h2>🔗 Tu Enlace de Referido</h2>
+
+      <div class="info-box">
+        <strong>📊 Tu Código Único:</strong> <span id="codigoReferido" style="color: #00c97e; font-weight: 700;"></span>
+      </div>
+
+      <p style="margin-bottom: 15px; color: #cbd5e0;">
+        Comparte este enlace con tus amigos. Cada compra que realicen con tu código te da comisión.
+      </p>
+
+      <div class="link-box">
+        <span class="link-text" id="enlaceReferido"></span>
+        <button class="btn-copy" onclick="copiarAlPortapapeles('enlaceReferido')">📋 Copiar</button>
+      </div>
+
+      <h3 style="color: #0ea5e9; margin-top: 30px; margin-bottom: 15px;">📤 Formas de Compartir</h3>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+        <button onclick="compartirWhatsApp()" style="background: #25D366;">📱 WhatsApp</button>
+        <button onclick="compartirFacebook()" style="background: #1877F2;">👥 Facebook</button>
+        <button onclick="compartirTwitter()" style="background: #1DA1F2;">🐦 Twitter</button>
+        <button onclick="compartirTelegram()" style="background: #0088cc;">💬 Telegram</button>
+      </div>
+
+      <div class="info-box" style="margin-top: 30px; background: rgba(14, 165, 233, 0.1); border-left-color: #0ea5e9;">
+        <strong style="color: #0ea5e9;">📧 Revisa tu correo electrónico</strong><br>
+        <p style="margin-top: 10px;">
+          Te hemos enviado un email con tu código de referido y toda la información del programa. 
+          Si no lo ves, revisa tu carpeta de spam.
+        </p>
+      </div>
+    </div>
+
+    <!-- Info Footer -->
+    <div class="info-box" style="margin-top: 40px;">
+      <strong>❓ Preguntas Frecuentes</strong><br>
+      <p style="margin-top: 10px;">
+        <strong>¿Cuándo se pagan las comisiones?</strong> Se pagan al final de cada mes si superaste $10 USD.<br>
+        <strong>¿Hay límite de referidos?</strong> No, puedes referir a cuantas personas quieras.<br>
+        <strong>¿Cómo verifico mis comisiones?</strong> Contacta a nuestro equipo por email o WhatsApp con tu código.<br>
+        <strong>¿Qué pasa si alguien devuelve el producto?</strong> Se ajusta la comisión correspondiente.
+      </p>
+    </div>
+
+    <!-- Contacto -->
+    <footer>
+      <p>¿Preguntas? Contacta a nuestro equipo de referidos</p>
+      <p style="margin-top: 10px;">
+        📧 <a href="mailto:contacto@celulink.mx" style="color: #00c97e; text-decoration: none;">contacto@celulink.mx</a> | 
+        📱 <a href="https://wa.me/5213413300001" style="color: #00c97e; text-decoration: none;">WhatsApp</a>
+      </p>
+      <p style="margin-top: 20px; color: #475569;">
+        © 2025 CeluLink | Programa de Referidos
+      </p>
+    </footer>
+  </div>
+
+  <script>
+    // 🔗 URL DEL GOOGLE APPS SCRIPT
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1kWL6Jfgm4Qltf3AppBZOsxA3MYQpg5Q_xVEo3a78vC5e0KwwihUBoB_TNMNc7kTDDg/exec';
+
+    // 📝 Manejar formulario
+    document.getElementById('formRegistro').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Mostrar loading
+      document.getElementById('loadingMessage').style.display = 'block';
+      document.getElementById('successMessage').style.display = 'none';
+      document.getElementById('errorMessage').style.display = 'none';
+      document.getElementById('btnSubmit').disabled = true;
+
+      const datos = {
+        apodo: document.getElementById('apodo').value.toUpperCase(),
+        nombre: document.getElementById('nombre').value,
+        email: document.getElementById('email').value,
+        telefono: document.getElementById('telefono').value,
+        pais: document.getElementById('pais').value,
+        metodoPago: document.getElementById('metodoPago').value,
+        redSocial: document.getElementById('redSocial').value || "N/A"
+      };
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors', // Importante para Google Apps Script
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(datos)
+        });
+
+        // Como es no-cors, asumimos éxito si no hay error
+        // Esperar 2 segundos para que el script procese
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Ocultar loading
+        document.getElementById('loadingMessage').style.display = 'none';
+        
+        // Mostrar éxito
+        document.getElementById('successMessage').style.display = 'block';
+        
+        // Generar código para mostrar (mismo formato que el script)
+        const codigoMostrar = datos.apodo.substring(0, 6) + '-XXXX';
+        const enlaceMostrar = `https://www.celulink.mx/?ref=${codigoMostrar}`;
+        
+        document.getElementById('codigoReferido').textContent = codigoMostrar;
+        document.getElementById('enlaceReferido').textContent = enlaceMostrar;
+        document.getElementById('linkSection').style.display = 'block';
+
+        // Limpiar formulario
+        document.getElementById('formRegistro').reset();
+
+        // Scroll a resultados
+        setTimeout(() => {
+          document.getElementById('linkSection').scrollIntoView({behavior: 'smooth'});
+        }, 500);
+
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('loadingMessage').style.display = 'none';
+        document.getElementById('errorMessage').style.display = 'block';
+      } finally {
+        document.getElementById('btnSubmit').disabled = false;
+      }
+    });
+
+    // 📋 Copiar al portapapeles
+    function copiarAlPortapapeles(elementId) {
+      const texto = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert('✅ ¡Copiado al portapapeles!');
+      });
+    }
+
+    // 📱 Compartir en redes
+    function compartirWhatsApp() {
+      const enlace = document.getElementById('enlaceReferido').textContent;
+      const mensaje = `🔗 ¡Compra celulares desde EE.UU. con envío a México! Usa mi código de referido y ambos ganamos: ${enlace}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(mensaje)}`);
+    }
+
+    function compartirFacebook() {
+      const enlace = document.getElementById('enlaceReferido').textContent;
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(enlace)}`);
+    }
+
+    function compartirTwitter() {
+      const enlace = document.getElementById('enlaceReferido').textContent;
+      const texto = `¡Compra en CeluLink con mi código de referido y ambos ganamos! ${enlace}`;
+      window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(texto)}`);
+    }
+
+    function compartirTelegram() {
+      const enlace = document.getElementById('enlaceReferido').textContent;
+      const mensaje = `¡Mira esto en CeluLink! ${enlace}`;
+      window.open(`https://t.me/share/url?url=${encodeURIComponent(enlace)}&text=${encodeURIComponent(mensaje)}`);
+    }
+
+    // Validar apodo (solo letras y números)
+    document.getElementById('apodo').addEventListener('input', function(e) {
+      this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+    });
+  </script>
+</body>
+</html>
