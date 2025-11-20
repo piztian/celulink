@@ -556,7 +556,6 @@
     // 🎯 AUTO-LLENAR CAMPO DE REFERIDO EN BITRIX24 (VERSIÓN MEJORADA)
 function autoLlenarCampoReferido() {
   const codigoReferido = localStorage.getItem('codigoReferido');
-  
   console.log('🔍 Iniciando auto-llenado...');
   console.log('🔍 Código guardado:', codigoReferido);
   
@@ -573,10 +572,8 @@ function autoLlenarCampoReferido() {
     console.log(`🔍 Intento ${intentos}/${maxIntentos}`);
     
     let campoReferido = null;
-    
-    // ESTRATEGIA 1: Buscar por el texto del label
     const todosLosCampos = document.querySelectorAll('input[type="text"], input[type="string"], input.b24-form-control-string');
-    console.log(`🔍 Total de campos encontrados: ${todosLosCampos.length}`);
+    console.log(`🔍 Total de campos: ${todosLosCampos.length}`);
     
     for (let input of todosLosCampos) {
       const container = input.closest('.b24-form-field') || 
@@ -593,14 +590,9 @@ function autoLlenarCampoReferido() {
           const textoLabel = label.textContent.toLowerCase().trim();
           console.log(`  - Label: "${textoLabel}"`);
           
-          // Buscar variaciones de "referido"
-          if (textoLabel.includes('referido') || 
-              textoLabel.includes('refiere') ||
-              textoLabel.includes('referral') ||
-              textoLabel.includes('codigo') ||
-              textoLabel.includes('código') ||
-              textoLabel.match(/\bref\b/)) {
-            console.log('✅ ¡Label coincide!');
+          // BÚSQUEDA MUY ESPECÍFICA: Debe contener "referido" SÍ O SÍ
+          if (textoLabel.includes('referido')) {
+            console.log('✅ ¡Label con "referido" encontrado!');
             campoReferido = input;
             break;
           }
@@ -608,6 +600,82 @@ function autoLlenarCampoReferido() {
       }
     }
     
+    // Si no encontró por "referido", buscar por placeholder
+    if (!campoReferido) {
+      console.log('🔍 Buscando por placeholder...');
+      for (let input of todosLosCampos) {
+        const placeholder = (input.placeholder || '').toLowerCase();
+        if (placeholder.includes('referido')) {
+          console.log('✅ ¡Placeholder con "referido" encontrado!');
+          campoReferido = input;
+          break;
+        }
+      }
+    }
+    
+    // Si no encontró, buscar por atributo name
+    if (!campoReferido) {
+      console.log('🔍 Buscando por name...');
+      campoReferido = document.querySelector('input[name*="referido" i]') ||
+                      document.querySelector('input[name*="1762382357"]') ||
+                      document.querySelector('input[name="UF_CRM_139_1762382357"]');
+      if (campoReferido) {
+        console.log('✅ ¡Encontrado por name!');
+      }
+    }
+    
+    if (campoReferido) {
+      console.log('✅ ¡CAMPO CORRECTO ENCONTRADO!');
+      console.log('   Tipo:', campoReferido.type);
+      console.log('   Name:', campoReferido.name);
+      console.log('   ID:', campoReferido.id);
+      console.log('   Class:', campoReferido.className);
+      
+      // Buscar el label del campo para verificar
+      const containerFinal = campoReferido.closest('.b24-form-field');
+      if (containerFinal) {
+        const labelFinal = containerFinal.querySelector('label');
+        if (labelFinal) {
+          console.log('   Label del campo:', labelFinal.textContent.trim());
+        }
+      }
+      
+      campoReferido.value = codigoReferido;
+      
+      ['input', 'change', 'blur', 'keyup', 'keydown', 'focus'].forEach(eventType => {
+        campoReferido.dispatchEvent(new Event(eventType, { bubbles: true }));
+        campoReferido.dispatchEvent(new Event(eventType, { bubbles: true, cancelable: true }));
+      });
+      
+      if (typeof BX !== 'undefined' && BX.fireEvent) {
+        BX.fireEvent(campoReferido, 'input');
+        BX.fireEvent(campoReferido, 'change');
+      }
+      
+      console.log('✅ Campo auto-llenado con:', codigoReferido);
+      console.log('✅ Valor actual:', campoReferido.value);
+      
+      clearInterval(intervalo);
+      
+      campoReferido.style.border = '3px solid #00c97e';
+      campoReferido.style.backgroundColor = 'rgba(0, 201, 126, 0.2)';
+      
+      setTimeout(() => {
+        campoReferido.style.border = '';
+        campoReferido.style.backgroundColor = '';
+      }, 3000);
+      
+    } else if (intentos >= maxIntentos) {
+      console.error('❌ No se encontró el campo después de', maxIntentos, 'intentos');
+      console.log('🔍 DEBUGGING: Mostrando todos los labels:');
+      const todosLabels = document.querySelectorAll('label, .b24-form-control-label');
+      todosLabels.forEach((label, i) => {
+        console.log(`Label ${i}: "${label.textContent.trim()}"`);
+      });
+      clearInterval(intervalo);
+    }
+  }, 500);
+}    
     // ESTRATEGIA 2: Si no lo encontró, buscar por placeholder
     if (!campoReferido) {
       console.log('🔍 Buscando por placeholder...');
