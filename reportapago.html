@@ -326,7 +326,7 @@
         ✨ <strong>¡Viniste con código de referido!</strong> 
         Tu código: <span id="codigo-banner"></span>
         <br>
-        <span style="font-size: 0.85rem; color: #a0aec0;">Asegúrate de incluirlo en el formulario para que la persona que te refirió reciba su comisión</span>
+        <span style="font-size: 0.85rem; color: #a0aec0;">El campo se llenará automáticamente en el formulario</span>
       </p>
     </div>
     
@@ -435,7 +435,6 @@
       navigator.clipboard.writeText(texto).then(() => {
         mostrarNotificacionCopiado();
         
-        // Cambiar temporalmente el texto del botón
         if (elemento) {
           const boton = elemento.querySelector('.btn-copiar');
           if (boton) {
@@ -463,107 +462,270 @@
         }, 300);
       }, 2000);
     }
-    // 🎯 DETECTAR ENVÍO DEL FORMULARIO BITRIX24
-window.addEventListener('load', function() {
-  // Esperar a que Bitrix24 cargue
-  setTimeout(() => {
-    const formBitrix = document.querySelector('form[data-b24form]') || 
-                       document.querySelector('#formulario-bitrix form');
-    
-    if (formBitrix) {
-      formBitrix.addEventListener('submit', function(e) {
-        registrarVentaReferido();
-      });
-    }
-  }, 3000); // Esperar 3 segundos para que Bitrix24 cargue
-});
 
-// 📊 REGISTRAR VENTA DE REFERIDO
-async function registrarVentaReferido() {
+    // 🎯 DETECTAR ENVÍO DEL FORMULARIO BITRIX24
+    window.addEventListener('load', function() {
+      setTimeout(() => {
+        const formBitrix = document.querySelector('form[data-b24form]') || 
+                           document.querySelector('#formulario-bitrix form');
+        
+        if (formBitrix) {
+          formBitrix.addEventListener('submit', function(e) {
+            registrarVentaReferido();
+          });
+        }
+      }, 3000);
+    });
+
+    // 📊 REGISTRAR VENTA DE REFERIDO
+    async function registrarVentaReferido() {
+      const codigoReferido = localStorage.getItem('codigoReferido');
+      const pedido = JSON.parse(sessionStorage.getItem('pedidoCarrito') || 'null');
+      
+      if (!codigoReferido) {
+        console.log('No hay código de referido');
+        return;
+      }
+      
+      const datosVenta = {
+        codigo: codigoReferido,
+        productos: pedido ? pedido.productos.map(p => p.nombre).join(', ') : 'Compra directa',
+        monto: pedido ? pedido.total : 0,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log('📊 Registrando venta para referido:', codigoReferido);
+      
+      try {
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1kWL6Jfgm4Qltf3AppBZOsxA3MYQpg5Q_xVEo3a78vC5e0KwwihUBoB_TNMNc7kTDDg/exec';
+        
+        await fetch(`${SCRIPT_URL}?action=registrarVenta`, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(datosVenta)
+        });
+        
+        console.log('✅ Venta registrada correctamente');
+      } catch (error) {
+        console.error('❌ Error al registrar venta:', error);
+      }
+    }
+
+    // 🔍 FUNCIÓN AUXILIAR: Buscar campo por el texto del label
+    function buscarCampoPorLabel(doc, codigo) {
+      try {
+        const inputs = doc.querySelectorAll('input[type="text"], input:not([type])');
+        
+        for (let input of inputs) {
+          const container = input.closest('.b24-form-field') || 
+                            input.closest('.b24-form-control-container') ||
+                            input.closest('div[class*="field"]') ||
+                            input.parentElement;
+          
+          if (container) {
+            const label = container.querySelector('label') || 
+                          container.querySelector('.b24-form-control-label') ||
+                          container.querySelector('[class*="label"]');
+            
+            if (label) {
+              const textoLabel = label.textContent.toLowerCase().trim();
+              console.log(`🔍 Revisando label: "${textoLabel}"`);
+              
+              if (textoLabel.includes('referido') || 
+                  textoLabel.includes('codigo') ||
+                  textoLabel.includes('código') ||
+                  textoLabel.includes('refiere')) {
+                console.log('✅ Label coincide:', textoLabel);
+                return input;
+              }
+            }
+          }
+        }
+        
+        return null;
+      } catch (e) {
+        console.error('Error buscando campo:', e);
+        return null;
+      }
+    }
+
+    // 🎯 AUTO-LLENAR CAMPO DE REFERIDO EN BITRIX24 (CON IFRAME)
+    // 🎯 AUTO-LLENAR CAMPO DE REFERIDO EN BITRIX24 (VERSIÓN MEJORADA)
+function autoLlenarCampoReferido() {
   const codigoReferido = localStorage.getItem('codigoReferido');
-  const pedido = JSON.parse(sessionStorage.getItem('pedidoCarrito') || 'null');
   
-  // Si no hay código de referido, no hacer nada
+  console.log('🔍 Iniciando auto-llenado...');
+  console.log('🔍 Código guardado:', codigoReferido);
+  
   if (!codigoReferido) {
-    console.log('No hay código de referido');
+    console.log('❌ No hay código de referido');
     return;
   }
   
-  // Preparar datos de la venta
-  const datosVenta = {
-    codigo: codigoReferido,
-    productos: pedido ? pedido.productos.map(p => p.nombre).join(', ') : 'Compra directa',
-    monto: pedido ? pedido.total : 0,
-    timestamp: new Date().toISOString()
-  };
+  let intentos = 0;
+  const maxIntentos = 40;
   
-  console.log('📊 Registrando venta para referido:', codigoReferido);
-  
-  // Enviar a Google Apps Script
-  try {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1kWL6Jfgm4Qltf3AppBZOsxA3MYQpg5Q_xVEo3a78vC5e0KwwihUBoB_TNMNc7kTDDg/exec';
+  const intervalo = setInterval(() => {
+    intentos++;
+    console.log(`🔍 Intento ${intentos}/${maxIntentos}`);
     
-    await fetch(`${SCRIPT_URL}?action=registrarVenta`, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(datosVenta)
-    });
+    let campoReferido = null;
     
-    console.log('✅ Venta registrada correctamente');
+    // ESTRATEGIA 1: Buscar por el texto del label
+    const todosLosCampos = document.querySelectorAll('input[type="text"], input[type="string"], input.b24-form-control-string');
+    console.log(`🔍 Total de campos encontrados: ${todosLosCampos.length}`);
     
-    // Opcional: Limpiar el código de referido después de usarlo
-    // localStorage.removeItem('codigoReferido');
+    for (let input of todosLosCampos) {
+      const container = input.closest('.b24-form-field') || 
+                        input.closest('.b24-form-control-container') ||
+                        input.closest('div[class*="field"]') ||
+                        input.parentElement;
+      
+      if (container) {
+        const label = container.querySelector('label') || 
+                      container.querySelector('.b24-form-control-label') ||
+                      container.querySelector('[class*="label"]');
+        
+        if (label) {
+          const textoLabel = label.textContent.toLowerCase().trim();
+          console.log(`  - Label: "${textoLabel}"`);
+          
+          // Buscar variaciones de "referido"
+          if (textoLabel.includes('referido') || 
+              textoLabel.includes('refiere') ||
+              textoLabel.includes('referral') ||
+              textoLabel.includes('codigo') ||
+              textoLabel.includes('código') ||
+              textoLabel.match(/\bref\b/)) {
+            console.log('✅ ¡Label coincide!');
+            campoReferido = input;
+            break;
+          }
+        }
+      }
+    }
     
-  } catch (error) {
-    console.error('❌ Error al registrar venta:', error);
-  }
+    // ESTRATEGIA 2: Si no lo encontró, buscar por placeholder
+    if (!campoReferido) {
+      console.log('🔍 Buscando por placeholder...');
+      for (let input of todosLosCampos) {
+        const placeholder = (input.placeholder || '').toLowerCase();
+        console.log(`  - Placeholder: "${placeholder}"`);
+        
+        if (placeholder.includes('referido') || 
+            placeholder.includes('código') ||
+            placeholder.includes('codigo')) {
+          console.log('✅ ¡Placeholder coincide!');
+          campoReferido = input;
+          break;
+        }
+      }
+    }
+    
+    // ESTRATEGIA 3: Si aún no lo encontró, buscar por name que contenga "referido"
+    if (!campoReferido) {
+      console.log('🔍 Buscando por atributo name...');
+      campoReferido = document.querySelector('input[name*="referido" i]') ||
+                      document.querySelector('input[name*="1762382357"]') ||
+                      document.querySelector('input[name="UF_CRM_139_1762382357"]');
+      
+      if (campoReferido) {
+        console.log('✅ ¡Encontrado por name!');
+      }
+    }
+    
+    // SI SE ENCONTRÓ, LLENAR
+    if (campoReferido) {
+      console.log('✅ ¡CAMPO ENCONTRADO!');
+      console.log('   Tipo:', campoReferido.type);
+      console.log('   Name:', campoReferido.name);
+      console.log('   ID:', campoReferido.id);
+      console.log('   Class:', campoReferido.className);
+      
+      // Llenar el campo
+      campoReferido.value = codigoReferido;
+      
+      // Disparar TODOS los eventos posibles
+      ['input', 'change', 'blur', 'keyup', 'keydown', 'focus'].forEach(eventType => {
+        campoReferido.dispatchEvent(new Event(eventType, { bubbles: true }));
+        campoReferido.dispatchEvent(new Event(eventType, { bubbles: true, cancelable: true }));
+      });
+      
+      // Para Bitrix24 específicamente
+      if (typeof BX !== 'undefined' && BX.fireEvent) {
+        BX.fireEvent(campoReferido, 'input');
+        BX.fireEvent(campoReferido, 'change');
+      }
+      
+      console.log('✅ Campo auto-llenado con:', codigoReferido);
+      console.log('✅ Valor actual del campo:', campoReferido.value);
+      
+      clearInterval(intervalo);
+      
+      // Resaltar el campo
+      campoReferido.style.border = '3px solid #00c97e !important';
+      campoReferido.style.backgroundColor = 'rgba(0, 201, 126, 0.2) !important';
+      campoReferido.style.transition = 'all 0.3s ease';
+      
+      setTimeout(() => {
+        campoReferido.style.border = '';
+        campoReferido.style.backgroundColor = '';
+      }, 3000);
+      
+    } else if (intentos >= maxIntentos) {
+      console.error('❌ No se encontró el campo después de', maxIntentos, 'intentos');
+      console.log('🔍 DEBUGGING: Mostrando TODOS los labels encontrados:');
+      
+      const todosLabels = document.querySelectorAll('label, .b24-form-control-label');
+      todosLabels.forEach((label, i) => {
+        console.log(`Label ${i}: "${label.textContent.trim()}"`);
+      });
+      
+      clearInterval(intervalo);
+    }
+  }, 500);
 }
+    
+        // 3️⃣ SI SE ENCONTRÓ, LLENAR
+        if (campoReferido) {
+          console.log('✅ ¡CAMPO ENCONTRADO!');
+          
+          campoReferido.value = codigoReferido;
+          
+          ['input', 'change', 'blur', 'keyup', 'keydown'].forEach(eventType => {
+            campoReferido.dispatchEvent(new Event(eventType, { bubbles: true }));
+          });
+          
+          console.log('✅ Campo auto-llenado con:', codigoReferido);
+          
+          clearInterval(intervalo);
+          
+          campoReferido.style.border = '3px solid #00c97e';
+          campoReferido.style.backgroundColor = 'rgba(0, 201, 126, 0.2)';
+          
+          setTimeout(() => {
+            campoReferido.style.border = '';
+            campoReferido.style.backgroundColor = '';
+          }, 3000);
+          
+        } else if (intentos >= maxIntentos) {
+          console.error('❌ No se encontró el campo después de', maxIntentos, 'intentos');
+          clearInterval(intervalo);
+        }
+      }, 500);
+    }
+
+    // Ejecutar auto-llenado
+    window.addEventListener('load', function() {
+      console.log('🔍 Página cargada, esperando 4 segundos...');
+      setTimeout(() => {
+        console.log('🔍 Ejecutando autoLlenarCampoReferido()...');
+        autoLlenarCampoReferido();
+      }, 4000);
+    });
   </script>
 </body>
 </html>
-```
-
----
-
-## ✅ ¡Listo! El código está completo con:
-
-1. ✅ **Banner de referido** (si el usuario tiene código guardado)
-2. ✅ **Resumen del pedido del carrito** (con botones de copiar)
-3. ✅ **Tu formulario de Bitrix24** integrado
-4. ✅ **Sistema de notificaciones** al copiar
-
----
-
-## 🎯 Cómo funciona:
-
-### **Escenario 1: Usuario con referido SIN carrito**
-```
-/reportapago/?ref=CODIGO123
-         ↓
-Banner verde: "Tu código: CODIGO123"
-         ↓
-Formulario Bitrix24 (normal)
-```
-
-### **Escenario 2: Usuario CON carrito**
-```
-/mi-carrito/ → Solicita link → Paga → /reportapago/
-         ↓
-Resumen del pedido con:
-- Código: CEL20250119... [📋 Copiar]
-- Productos listados
-- Total: $1,500 USD (clickeable)
-         ↓
-Formulario Bitrix24 (copia manual del resumen)
-```
-
-### **Escenario 3: Usuario con referido Y carrito**
-```
-Banner: "Tu código: CODIGO123"
-         +
-Resumen del pedido completo
-         +
-Formulario Bitrix24
