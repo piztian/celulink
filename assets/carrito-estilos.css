@@ -1,0 +1,80 @@
+/* 🛒 ESTILOS DEL CARRITO FLOTANTE - CELULINK */
+/* Este archivo se usa en: catálogo, detalles e inicio */
+
+.carrito-flotante {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+  background: linear-gradient(135deg, #00c97e, #00a86b);
+  color: #fff;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0, 201, 126, 0.4);
+  transition: all 0.3s ease;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.carrito-flotante:hover {
+  transform: scale(1.1);
+  box-shadow: 0 12px 35px rgba(0, 201, 126, 0.6);
+}
+
+.carrito-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff2e2e;
+  color: #fff;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 2px solid #0f172a;
+}
+
+.carrito-flotante.vacio {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 🎉 ANIMACIONES */
+@keyframes agregado {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.agregado-animacion {
+  animation: agregado 0.3s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(400px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(400px); opacity: 0; }
+}
+
+/* 📱 RESPONSIVE */
+@media (max-width: 768px) {
+  .carrito-flotante {
+    width: 55px;
+    height: 55px;
+    bottom: 20px;
+    right: 20px;
+  }
+}
