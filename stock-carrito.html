@@ -593,18 +593,45 @@
       return nombre ? nombre.replace(/\.[^/.]+$/, "") : "";
     }
 
+    // 📸 FUNCIÓN MEJORADA: AUTO-MAPEO DE IMÁGENES POR NOMBRE
     function obtenerImagenes(producto) {
       const imagenes = [];
+      const nombreArchivo = producto["archivo"]; // Ej: "BLU BOLD K30 (6+12) GB 256 GB 4G"
+      
+      // 1️⃣ PRIMERO: Buscar URLs manuales en Google Sheets
       if (producto["url_imagen"]) {
         const urls = producto["url_imagen"].split(/[,;\n]+/).map(url => url.trim()).filter(url => url);
         imagenes.push(...urls);
       }
+      
+      // Buscar columnas adicionales (url_imagen_2, url_imagen_3, etc.)
       for (let i = 2; i <= 10; i++) {
         const campo = `url_imagen_${i}`;
         if (producto[campo] && producto[campo].trim()) {
           imagenes.push(producto[campo].trim());
         }
       }
+      
+      // 2️⃣ SEGUNDO: Si NO hay imágenes manuales, buscar automáticamente en GitHub
+      if (imagenes.length === 0 && nombreArchivo) {
+        const baseURL = 'https://raw.githubusercontent.com/piztian/celulink/main/fotos/';
+        const extensiones = ['jpg', 'jpeg', 'png', 'webp'];
+        
+        // Agregar imagen principal (sin número)
+        extensiones.forEach(ext => {
+          const url = baseURL + encodeURIComponent(`${nombreArchivo}.${ext}`);
+          imagenes.push(url);
+        });
+        
+        // Agregar variantes: (2), (3), (4), (5)
+        for (let num = 2; num <= 5; num++) {
+          extensiones.forEach(ext => {
+            const url = baseURL + encodeURIComponent(`${nombreArchivo} (${num}).${ext}`);
+            imagenes.push(url);
+          });
+        }
+      }
+      
       return imagenes.filter(img => img && img !== "");
     }
 
@@ -613,10 +640,10 @@
         return '<div style="color: #a0aec0; text-align: center;">Sin imagen</div>';
       }
       if (imagenes.length === 1) {
-        return `<img class="producto-img" src="${imagenes[0]}" alt="Producto" />`;
+        return `<img class="producto-img" src="${imagenes[0]}" alt="Producto" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'color: #a0aec0; text-align: center;\\'>Sin imagen</div>';" />`;
       }
       const slidesHTML = imagenes.map((img, index) => 
-        `<div class="carousel-slide"><img src="${img}" alt="Imagen ${index + 1}" /></div>`
+        `<div class="carousel-slide"><img src="${img}" alt="Imagen ${index + 1}" onerror="this.parentElement.style.display='none';" /></div>`
       ).join('');
       const dotsHTML = imagenes.map((_, index) => 
         `<div class="carousel-dot ${index === 0 ? 'active' : ''}" data-index="${index}"></div>`
@@ -836,42 +863,24 @@
     `;
     document.head.appendChild(style);
   </script>
+<script>
+// 🎁 SISTEMA DE CAPTURA DE CÓDIGO DE REFERIDO
+(function() {
+  // Capturar código de la URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const refCode = urlParams.get('ref');
+
+  if (refCode) {
+    localStorage.setItem('codigoReferido', refCode);
+    console.log('✅ Código de referido guardado:', refCode);
+  }
+  
+  // Verificar si ya hay código guardado
+  const codigoGuardado = localStorage.getItem('codigoReferido');
+  if (codigoGuardado) {
+    console.log('📋 Código de referido activo:', codigoGuardado);
+  }
+})();
+</script>
 </body>
 </html>
-```
-
----
-
-## ✅ Cambios implementados:
-
-### **1. Banner informativo nuevo:**
-- ✅ Dos opciones claramente diferenciadas
-- ✅ "Un Solo Equipo" marcado como "⚡ MÁS RÁPIDO"
-- ✅ "Varios Equipos" con badge "🛒 CARRITO"
-- ✅ Pasos explicados en cada opción
-
-### **2. Botón renombrado:**
-- Cambió de: `💳 Pagar`
-- A: `💳 Link Directo de Pago`
-
-### **3. Mensaje claro:**
-- Opción 1 = Rápido y directo (1 producto)
-- Opción 2+ = Carrito para múltiples productos
-
----
-
-## 📱 Vista del banner:
-```
-┌─────────────────────────────────────────────────────┐
-│  [1] Un Solo Equipo        │  [2+] Varios Equipos   │
-│  ⚡ MÁS RÁPIDO             │  🛒 CARRITO             │
-│                            │                         │
-│  ¿Solo necesitas un        │  ¿Quieres comprar 2 o  │
-│  celular? Cada producto    │  más celulares? Usa el │
-│  tiene su link de pago     │  carrito de compras...  │
-│  directo...                │                         │
-│                            │                         │
-│  ✓ Encuentra tu equipo     │  ✓ Agrega productos     │
-│  ✓ Click en "Link Directo  │  ✓ Revisa tu pedido     │
-│  ✓ Paga y listo            │  ✓ Solicita link        │
-└─────────────────────────────────────────────────────┘
