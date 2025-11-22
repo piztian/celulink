@@ -1,0 +1,514 @@
+// ============================================
+// GOOGLE APPS SCRIPT - SISTEMA COMPLETO DE REFERIDOS CELULINK
+// ============================================
+
+// 🌐 FUNCIÓN: Manejar solicitudes GET
+function doGet(e) {
+  const action = e.parameter.action;
+  
+  switch(action) {
+    case 'listarReferidores':
+      return listarReferidores();
+    
+    case 'listarVentas':
+      const codigo = e.parameter.codigo;
+      if (codigo) {
+        return listarVentasPorReferidor(codigo);
+      } else {
+        return listarVentasRecientes(e.parameter.limit || 10);
+      }
+    
+    case 'estadisticas':
+      return estadisticas();
+    
+    default:
+      return ContentService.createTextOutput(JSON.stringify({ 
+        success: false, 
+        error: 'Acción no válida' 
+      })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// 🌐 FUNCIÓN: Manejar solicitudes POST
+function doPost(e) {
+  try {
+    const datos = JSON.parse(e.postData.contents);
+    const action = e.parameter.action;
+    
+    switch(action) {
+      case 'registrarReferidor':
+        return registrarReferidor(datos);
+      
+      case 'registrarVentaManual':
+        return registrarVentaManual(datos);
+      
+      default:
+        return ContentService.createTextOutput(JSON.stringify({ 
+          success: false, 
+          error: 'Acción no válida' 
+        })).setMimeType(ContentService.MimeType.JSON);
+    }
+    
+  } catch (error) {
+    return ContentService.createTextOutput(JSON.stringify({ 
+      success: false, 
+      error: error.toString() 
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// 📝 FUNCIÓN: Registrar nuevo referidor
+function registrarReferidor(datos) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Referidores');
+  
+  // Validar datos requeridos
+  if (!datos.apodo || !datos.nombre || !datos.email) {
+    throw new Error("Faltan campos requeridos");
+  }
+  
+  // Generar código único
+  const codigo = generarCodigoUnico(datos.apodo);
+  const enlace = `https://www.celulink.mx/?ref=${codigo}`;
+  
+  // Preparar fila para insertar
+  const nuevaFila = [
+    new Date(),           // timestamp
+    datos.apodo,          // apodo
+    datos.nombre,         // nombre
+    datos.email,          // email
+    datos.telefono || '', // telefono
+    datos.pais || '',     // pais
+    datos.metodoPago || '',// método de pago
+    datos.redSocial || '', // red social
+    codigo,               // código único
+    enlace,               // enlace personalizado
+    0,                    // ventas_count
+    0,                    // comisiones_total
+    'Activo'              // estado
+  ];
+  
+  // Insertar nueva fila
+  sheet.appendRow(nuevaFila);
+  
+  // Enviar email de bienvenida
+  enviarEmailBienvenida(
+    datos.email, 
+    datos.nombre, 
+    codigo, 
+    enlace
+  );
+  
+  return ContentService.createTextOutput(JSON.stringify({ 
+    success: true,
+    codigo: codigo,
+    enlace: enlace
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// 🔑 FUNCIÓN: Generar código único
+function generarCodigoUnico(apodo) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Referidores');
+  const data = sheet.getDataRange().getValues();
+  
+  // Limpiar apodo (quitar espacios, convertir a mayúsculas)
+  const apodoLimpio = apodo.trim().toUpperCase().replace(/\s+/g, '');
+  
+  // Contar ocurrencias del apodo
+  let contador = 0;
+  for (let i = 1; i < data.length; i++) {
+    const codigoExistente = data[i][8]; // Columna I = código
+    if (codigoExistente && codigoExistente.startsWith(apodoLimpio)) {
+      contador++;
+    }
+  }
+  
+  // Generar código final
+  return contador === 0 ? apodoLimpio : `${apodoLimpio}-${contador + 1}`;
+}
+
+// 📧 FUNCIÓN: Enviar Email de Bienvenida
+function enviarEmailBienvenida(email, nombre, codigo, enlace) {
+  const subject = "🎉 ¡Bienvenido al Programa de Referidos de CeluLink!";
+  
+  const htmlBody = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .codigo-box { 
+          background: #f0fdf4; 
+          border: 1px solid #00c97e; 
+          padding: 15px; 
+          text-align: center; 
+          margin: 20px 0; 
+          border-radius: 5px; 
+        }
+        .codigo { 
+          font-size: 1.5em; 
+          color: #166534; 
+          font-weight: bold; 
+          margin: 0; 
+        }
+        .btn {
+          display: inline-block;
+          background: #00c97e;
+          color: white !important;
+          padding: 10px 20px;
+          text-decoration: none;
+          border-radius: 5px;
+          margin: 20px 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2>👋 ¡Hola ${nombre}!</h2>
+        <p>¡Bienvenido al Programa de Referidos de CeluLink! Estamos emocionados de tenerte con nosotros.</p>
+        
+        <div class="codigo-box">
+          <p style="margin: 0 0 10px 0; color: #166534; font-weight: 600;">📋 Tu Código Único de Referido:</p>
+          <p class="codigo">${codigo}</p>
+        </div>
+        
+        <p><strong>Tu enlace personalizado:</strong></p>
+        <div class="enlace-box">
+          <a href="${enlace}" style="color: #0ea5e9; word-break: break-all;">${enlace}</a>
+        </div>
+        
+        <div class="pasos">
+          <h3 style="color: #00c97e; margin-top: 0;">📖 Cómo funciona:</h3>
+          <ol>
+            <li><strong>Comparte tu enlace</strong> con amigos y familia</li>
+            <li><strong>Ellos compran</strong> usando tu código de referido</li>
+            <li><strong>Ganas comisión</strong> por cada compra</li>
+            <li><strong>Te pagamos mensualmente</strong> si superas $10 USD</li>
+          </ol>
+        </div>
+        
+        <p style="background: #fef3c7; padding: 15px; border-left: 4px solid #f59e0b; border-radius: 5px;">
+          <strong>💰 Estructura de Comisiones:</strong><br>
+          • 5% en todas las compras<br>
+          • +2% adicional si generas más de $1,000 USD al mes<br>
+          • +3% adicional si generas más de $2,500 USD al mes<br>
+          • Máximo: 10% de comisión
+        </p>
+        
+        <div style="text-align: center;">
+          <a href="${enlace}" class="btn">🚀 Compartir Mi Enlace</a>
+        </div>
+        
+        <p style="margin-top: 30px; color: #64748b; font-size: 0.9rem;">
+          Si tienes dudas, contáctanos:<br>
+          📧 <a href="mailto:contacto@celulink.mx" style="color: #00c97e;">contacto@celulink.mx</a><br>
+          📱 <a href="https://wa.me/5213413300001" style="color: #00c97e;">WhatsApp</a>
+        </p>
+        
+        <div class="footer">
+          <p style="margin: 0;">© 2025 CeluLink | Programa de Referidos</p>
+          <p style="margin: 10px 0 0 0; font-size: 0.8rem;">Este correo fue enviado a ${email}</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: htmlBody
+    });
+    Logger.log("✅ Email enviado correctamente a: " + email);
+  } catch (error) {
+    Logger.log("❌ Error al enviar email: " + error);
+    throw error;
+  }
+}
+
+// 📧 FUNCIÓN: Notificar al referidor de nueva venta
+function enviarNotificacionVenta(email, nombre, codigo, monto, comision) {
+  const subject = "🎉 ¡Nueva venta con tu código de referido!";
+  
+  const htmlBody = `
+    <html>
+      <body>
+        <h2>¡Felicidades, ${nombre}!</h2>
+        <p>Se ha registrado una nueva venta con tu código ${codigo}</p>
+        <p>Monto de venta: $${monto.toFixed(2)} USD</p>
+        <p>Tu comisión: $${comision.toFixed(2)} USD</p>
+      </body>
+    </html>
+  `;
+  
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      htmlBody: htmlBody
+    });
+    Logger.log("✅ Notificación de venta enviada a: " + email);
+  } catch (error) {
+    Logger.log("❌ Error al enviar notificación de venta: " + error);
+    throw error;
+  }
+}
+
+// 📊 FUNCIÓN: Listar Referidores (Solo Activos)
+function listarReferidores() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Referidores');
+  const data = sheet.getDataRange().getValues();
+  
+  const referidores = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    const fila = data[i];
+    
+    const estado = fila[12]; // Columna M
+    const codigo = fila[8];  // Columna I
+    const nombre = fila[2];  // Columna C
+    
+    if (estado === 'Activo' && codigo && nombre) {
+      referidores.push({
+        codigo: codigo,
+        nombre: nombre,
+        apodo: fila[1] || '',
+        telefono: fila[4] || '',
+        email: fila[3] || '',
+        ventas: fila[10] || 0,
+        comisiones: fila[11] || 0
+      });
+    }
+  }
+  
+  return ContentService
+    .createTextOutput(JSON.stringify({ success: true, referidores: referidores }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// 📊 FUNCIÓN: Listar Ventas por Referidor
+function listarVentasPorReferidor(codigoBuscado) {
+  const sheetReferidores = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Referidores');
+  const sheetVentas = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Ventas_Referidos');
+  
+  const dataReferidores = sheetReferidores.getDataRange().getValues();
+  let nombreReferidor = '';
+  let apodoReferidor = '';
+  let emailReferidor = '';
+  
+  for (let i = 1; i < dataReferidores.length; i++) {
+    if (dataReferidores[i][8] === codigoBuscado) {
+      nombreReferidor = dataReferidores[i][2];
+      apodoReferidor = dataReferidores[i][1];
+      emailReferidor = dataReferidores[i][3];
+      break;
+    }
+  }
+  
+  const dataVentas = sheetVentas.getDataRange().getValues();
+  const ventas = [];
+  
+  for (let i = 1; i < dataVentas.length; i++) {
+    const fila = dataVentas[i];
+    
+    const codigoVenta = fila[1];
+    const nombreVenta = fila[2];
+    
+    const coincideCodigo = codigoVenta === codigoBuscado;
+    const coincideNombre = nombreVenta === nombreReferidor || 
+                           nombreVenta === apodoReferidor ||
+                           nombreVenta === emailReferidor ||
+                           nombreVenta === (nombreReferidor + ' ' + emailReferidor);
+    
+    if (coincideCodigo || coincideNombre) {
+      ventas.push({
+        fecha: fila[0] || fila[8],
+        codigo: codigoVenta,
+        referidor: nombreVenta,
+        producto: fila[3],
+        precio: fila[4] || 0,
+        utilidad: fila[5] || 0,
+        comision: fila[6] || 0,
+        estado: fila[7] || 'Pendiente'
+      });
+    }
+  }
+  
+  return ContentService
+    .createTextOutput(JSON.stringify({ 
+      success: true, 
+      ventas: ventas,
+      referidor: nombreReferidor
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// 📊 FUNCIÓN: Listar Ventas Recientes
+function listarVentasRecientes(limit) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Ventas_Referidos');
+  const data = sheet.getDataRange().getValues();
+  
+  const ventas = [];
+  const limitNum = parseInt(limit) || 10;
+  
+  const startIndex = Math.max(1, data.length - limitNum);
+  
+  for (let i = startIndex; i < data.length; i++) {
+    const fila = data[i];
+    
+    ventas.push({
+      fecha: fila[0] || fila[8],
+      codigo: fila[1],
+      referidor: fila[2],
+      producto: fila[3],
+      precio: fila[4] || 0,
+      utilidad: fila[5] || 0,
+      comision: fila[6] || 0,
+      estado: fila[7] || 'Pendiente'
+    });
+  }
+  
+  return ContentService
+    .createTextOutput(JSON.stringify({ 
+      success: true, 
+      ventas: ventas.reverse()
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// 📊 FUNCIÓN: Obtener Estadísticas
+function estadisticas() {
+  const sheetReferidores = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Referidores');
+  const sheetVentas = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Ventas_Referidos');
+  
+  const dataReferidores = sheetReferidores.getDataRange().getValues();
+  const dataVentas = sheetVentas.getDataRange().getValues();
+  
+  let totalReferidores = 0;
+  for (let i = 1; i < dataReferidores.length; i++) {
+    if (dataReferidores[i][12] === 'Activo') {
+      totalReferidores++;
+    }
+  }
+  
+  const hoy = new Date();
+  const mesActual = hoy.getMonth();
+  const añoActual = hoy.getFullYear();
+  let ventasMes = 0;
+  let comisionesPendientes = 0;
+  
+  for (let i = 1; i < dataVentas.length; i++) {
+    const fecha = new Date(dataVentas[i][0] || dataVentas[i][8]);
+    
+    if (fecha.getMonth() === mesActual && fecha.getFullYear() === añoActual) {
+      ventasMes++;
+    }
+    
+    if (dataVentas[i][7] === 'Pendiente') {
+      comisionesPendientes += parseFloat(dataVentas[i][6]) || 0;
+    }
+  }
+  
+  return ContentService
+    .createTextOutput(JSON.stringify({ 
+      success: true,
+      totalReferidores: totalReferidores,
+      ventasMes: ventasMes,
+      comisionesPendientes: comisionesPendientes
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// 📝 FUNCIÓN: Registrar Venta Manual
+function registrarVentaManual(datos) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Ventas_Referidos');
+  const sheetReferidores = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Referidores');
+  
+  const dataReferidores = sheetReferidores.getDataRange().getValues();
+  let nombreReferidor = '';
+  let emailReferidor = '';
+  
+  for (let i = 1; i < dataReferidores.length; i++) {
+    if (dataReferidores[i][8] === datos.codigo) {
+      nombreReferidor = dataReferidores[i][2];
+      emailReferidor = dataReferidores[i][3];
+      break;
+    }
+  }
+  
+  const comision = (datos.utilidad * datos.porcentajeComision) / 100;
+  
+  const nuevaFila = [
+    new Date(),           // timestamp
+    datos.codigo,         // codigo_usado
+    nombreReferidor,      // referidor_nombre
+    datos.producto,       // producto
+    datos.precioVenta,    // monto_usd
+    datos.utilidad,       // utilidad_real
+    comision,             // comision_usd
+    'Pendiente',          // estado
+    new Date(),           // fecha_compra
+    datos.notas || ''     // notas
+  ];
+  
+  sheet.appendRow(nuevaFila);
+  
+  // Notificar al referidor
+  try {
+    enviarNotificacionVenta(
+      emailReferidor, 
+      nombreReferidor, 
+      datos.codigo, 
+      datos.precioVenta, 
+      comision
+    );
+  } catch (error) {
+    Logger.log("Error al enviar notificación de venta: " + error);
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ 
+    success: true,
+    message: 'Venta registrada correctamente'
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// 🧪 FUNCIÓN DE PRUEBA - Ejecutar manualmente
+function probarRegistro() {
+  const datosPrueba = {
+    apodo: "TESTUSER",
+    nombre: "Usuario de Prueba",
+    email: "piztian@gmail.com", // Cambia esto
+    telefono: "+52 1234567890",
+    pais: "México",
+    metodoPago: "PayPal",
+    redSocial: "WhatsApp"
+  };
+  
+  try {
+    const resultado = registrarReferidor(datosPrueba);
+    Logger.log("✅ Registro exitoso: " + JSON.stringify(resultado));
+  } catch (error) {
+    Logger.log("❌ Error en registro: " + error);
+  }
+}
+
+// 🧪 FUNCIÓN DE PRUEBA - Probar Envío de Email
+function probarEnvioEmail() {
+  try {
+    Logger.log("Iniciando prueba de envío de email");
+    const emailPrueba = "tu_email_de_prueba@celulink.mx"; // Cambia esto
+    
+    enviarEmailBienvenida(
+      emailPrueba, 
+      "Juan Prueba", 
+      "JUANTEST", 
+      "https://www.celulink.mx/?ref=JUANTEST"
+    );
+    
+    Logger.log("✅ Prueba de email completada");
+  } catch (error) {
+    Logger.log("❌ Error en prueba de email: " + error);
+  }
+}
