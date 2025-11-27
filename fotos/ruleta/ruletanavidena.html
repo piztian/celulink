@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>CeluLink – Ruleta Navideña</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body { 
+    text-align:center; 
+    color:white; 
+    font-family:Arial; 
+    background:linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Nieve cayendo */
+.snowflake {
+    position: fixed;
+    top: -10px;
+    z-index: 1;
+    user-select: none;
+    cursor: default;
+    color: white;
+    font-size: 1.5em;
+    font-family: Arial, sans-serif;
+    text-shadow: 0 0 5px #fff;
+    animation: snowfall linear infinite;
+}
+
+@keyframes snowfall {
+    to {
+        transform: translateY(100vh) rotateZ(360deg);
+    }
+}
+
+/* RULETA */
+.ruleta-container {
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    border: 10px solid #FF6B00;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0B5F0B 0%, #1a8c1a 100%);
+    box-shadow: 0 0 40px #FF6B00, 0 0 80px rgba(255, 107, 0, 0.5);
+}
+
+.indicador {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 30px solid #FFD700;
+    position: absolute;
+    top: -10px;
+    left: calc(50% - 20px);
+    z-index: 20;
+}
+
+#ruleta {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transition: transform 5s cubic-bezier(0.12, 0.07, 0.1, 1);
+}
+
+.luz {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    position: absolute;
+    animation: parpadeador 0.6s infinite alternate;
+}
+
+.luz.roja {
+    background: #FF0000;
+    box-shadow: 0 0 10px #FF0000;
+}
+
+.luz.verde {
+    background: #00FF00;
+    box-shadow: 0 0 10px #00FF00;
+}
+
+.luz.amarilla {
+    background: #FFD700;
+    box-shadow: 0 0 10px #FFD700;
+}
+
+@keyframes parpadeador {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+#btnGirar {
+    margin-top: 10px;
+    padding: 12px 26px;
+    background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+    border: 3px solid #FFD700;
+    border-radius: 12px;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.6);
+    transition: transform 0.2s;
+}
+
+#btnGirar:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+#btnGirar:disabled {
+    background: #555;
+    cursor: not-allowed;
+    box-shadow: none;
+    border-color: #888;
+}
+
+/* Inputs */
+.input-field {
+    width: 260px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #FF6B00;
+    font-size: 16px;
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.input-field::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.btn-validar {
+    margin-top: 10px;
+    padding: 10px 22px;
+    background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+    color:white;
+    border: 2px solid #FFD700;
+    border-radius: 12px;
+    cursor:pointer;
+    font-size: 17px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.6);
+    transition: transform 0.2s;
+}
+
+.btn-validar:hover:not(:disabled) {
+    transform: scale(1.05);
+}
+
+#msgTelefono, #msgCorreo, #msgEspera {
+    margin-top:8px;
+    font-size:14px;
+}
+
+/* Boleto */
+.overlay {
+    display:none;
+    position:fixed;
+    left:0; top:0;
+    width:100%; height:100%;
+    background:#000d;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+    overflow-y:auto;
+}
+
+.card-premio {
+    width:320px;
+    background:linear-gradient(135deg, #fff5e1 0%, #ffe8b6 100%);
+    color:#FF6B00;
+    padding:20px;
+    border-radius:16px;
+    border: 5px solid #FF6B00;
+    box-shadow:0 0 40px rgba(255, 107, 0, 0.6), 0 0 80px rgba(0, 255, 0, 0.2);
+    animation:pop .4s ease;
+    margin:20px auto;
+    position: relative;
+}
+
+.card-premio::before {
+    content: "🎄";
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+}
+
+.card-premio::after {
+    content: "🎄";
+    position: absolute;
+    bottom: -15px;
+    right: -10px;
+    font-size: 30px;
+}
+
+@keyframes pop {
+    0% { transform:scale(0.4); opacity:0; }
+    100% { transform:scale(1); opacity:1; }
+}
+
+.boleto-btn {
+    padding:9px 17px;
+    background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+    color:white;
+    border-radius:10px;
+    margin-top:10px;
+    cursor:pointer;
+    border: 2px solid #FFD700;
+    width:100%;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.boleto-btn:hover {
+    transform: scale(1.05);
+}
+
+#btnRefrescar {
+    margin-top: 20px;
+    padding: 12px 26px;
+    background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%);
+    border: 3px solid #FFD700;
+    border-radius: 12px;
+    font-size: 18px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.6);
+    transition: transform 0.2s;
+}
+
+#btnRefrescar:hover {
+    transform: scale(1.05);
+}
+
+/* Overlay de carga */
+.overlay-carga {
+    display:none;
+    position:fixed;
+    left:0; top:0;
+    width:100%; height:100%;
+    background:#000d;
+    justify-content:center;
+    align-items:center;
+    z-index:9998;
+}
+
+.card-carga {
+    background:linear-gradient(135deg, #fff5e1 0%, #ffe8b6 100%);
+    color:#FF6B00;
+    padding:30px;
+    border-radius:16px;
+    text-align:center;
+    border: 4px solid #FF6B00;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #FF6B00;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+h1 {
+    color: #FF6B00;
+    text-shadow: 2px 2px 4px #FFD700;
+    font-size: 28px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="mainBox">
+    <h1>🎄 ¡Bienvenido a la Ruleta Navideña CeluLink! 🎅</h1>
+    <p>Ingresa tu teléfono y correo para participar y ganar un descuento navideño.</p>
+
+    <!-- TELEFONO -->
+    <input id="telefono" class="input-field" maxlength="10" placeholder="Teléfono (10 dígitos)">
+    <div id="msgTelefono"></div>
+
+    <!-- CORREO -->
+    <input id="correo" class="input-field" type="email" placeholder="Correo electrónico">
+    <div id="msgCorreo"></div>
+
+    <!-- MENSAJE DE ESPERA -->
+    <div id="msgEspera" style="color:#FFD700;"></div>
+
+    <button class="btn-validar" id="btnValidar">✔ Validar datos</button>
+
+    <!-- RULETA -->
+    <div class="ruleta-container" id="ruletaBox">
+        <div class="indicador"></div>
+        <img id="ruleta" src="https://raw.githubusercontent.com/piztian/celulink/main/fotos/ruleta/celulink-ruleta-1.png">
+    </div>
+
+    <button id="btnGirar" disabled>🎡 ¡GIRAR RULETA NAVIDEÑA!</button>
+    <button id="btnRefrescar" style="display:none;">🔄 Refrescar para otra participación</button>
+</div>
+
+<!-- BOLETO -->
+<div class="overlay" id="overlay">
+    <div class="card-premio">
+        <h2>🎁 ¡FELICIDADES! Boleto de Descuento Navideño 🎁</h2>
+
+        <p><b>📱 Teléfono: </b><span id="bTelefono"></span></p>
+        <p><b>🎀 Premio: </b><span id="bPremio"></span></p>
+        <p><b>📅 Fecha: </b><span id="bFecha"></span></p>
+        <p><b>🎫 Folio: </b><span id="bFolio"></span></p>
+
+        <p style="font-size:13px;color:#FF6B00;margin-top:10px; font-weight: bold;">
+         📸 Toma captura de este boleto y muéstralo en el sitio.
+        </p>
+
+        <button class="boleto-btn" id="btnWhatsapp">📲 Enviar por WhatsApp</button>
+        <button class="boleto-btn" onclick="cerrarBoleto()">Cerrar</button>
+    </div>
+</div>
+
+<!-- OVERLAY DE CARGA -->
+<div class="overlay-carga" id="overlayCarga">
+    <div class="card-carga">
+        <div class="spinner"></div>
+        <p>🎄 Procesando tu premio navideño... 🎄</p>
+    </div>
+</div>
+
+<script>
+// =================================================
+// CONFIGURACIÓN
+// =================================================
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrQhsGLGLD8w9NzZEgf8qDfKzylnnVos0lZ0URvdxkR752q2To7sjmfHOAvjrWVl0h/exec";
+const WHATSAPP_NUM = "3413300001";
+const premios = [
+    {nombre:"10% de descuento en Motorola", prob:15},
+    {nombre:"10% de descuento en Samsung", prob:15},
+    {nombre:"10% de descuento en Apple", prob:14},
+    {nombre:"10% de descuento en Xiaomi", prob:14},
+    {nombre:"10% de descuento en OnePlus", prob:14},
+    {nombre:"10% de descuento en Google Pixel", prob:14},
+    {nombre:"10% de descuento en cualquier marca", prob:14}
+];
+
+console.log("✓ Script de ruleta CeluLink cargado. URL:", SCRIPT_URL);
+
+// =================================================
+// NIEVE CAYENDO
+// =================================================
+function crearNieve() {
+    const snowflakeCount = 30;
+    for (let i = 0; i < snowflakeCount; i++) {
+        const snowflake = document.createElement("div");
+        snowflake.className = "snowflake";
+        snowflake.textContent = "❄";
+        snowflake.style.left = Math.random() * 100 + "%";
+        snowflake.style.animationDuration = (Math.random() * 10 + 10) + "s";
+        snowflake.style.animationDelay = Math.random() * 2 + "s";
+        document.body.appendChild(snowflake);
+    }
+}
+crearNieve();
+
+// =================================================
+// VARIABLES GLOBALES
+// =================================================
+let datosOK = false;
+let girando = false;
+
+// =================================================
+// VALIDACIÓN
+// =================================================
+document.getElementById("btnValidar").onclick = () => {
+    const tel = document.getElementById("telefono").value.trim();
+    const correo = document.getElementById("correo").value.trim().toLowerCase();
+
+    const msgTel = document.getElementById("msgTelefono");
+    const msgCorreo = document.getElementById("msgCorreo");
+
+    const telefonoRegex = /^[0-9]{10}$/;
+    if (!telefonoRegex.test(tel)) {
+        msgTel.style.color = "red";
+        msgTel.textContent = "❗ Número inválido.";
+        datosOK = false;
+        document.getElementById("btnGirar").disabled = true;
+        return;
+    } else {
+        msgTel.style.color = "lightgreen";
+        msgTel.textContent = "✔ Número válido.";
+    }
+
+    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!correoRegex.test(correo)) {
+        msgCorreo.style.color = "red";
+        msgCorreo.textContent = "❗ Correo inválido.";
+        datosOK = false;
+        document.getElementById("btnGirar").disabled = true;
+        return;
+    } else {
+        msgCorreo.style.color = "lightgreen";
+        msgCorreo.textContent = "✔ Correo válido.";
+    }
+
+    datosOK = true;
+    document.getElementById("btnGirar").disabled = false;
+};
+
+// =================================================
+// LUCES NAVIDEÑAS ALREDEDOR
+// =================================================
+const cont = document.getElementById("ruletaBox");
+const colores = ["roja", "verde", "amarilla"];
+for(let i=0;i<12;i++){
+    const luz=document.createElement("div");
+    luz.className="luz " + colores[i % 3];
+    const a=(360/12)*i;
+    const x=180+170*Math.cos((a-90)*Math.PI/180);
+    const y=180+170*Math.sin((a-90)*Math.PI/180);
+    luz.style.left=x+"px"; 
+    luz.style.top=y+"px";
+    luz.style.animationDelay=(i*.05)+"s";
+    cont.appendChild(luz);
+}
+
+// =================================================
+// Funciones
+// =================================================
+function premioAleatorio(){
+    let total=premios.reduce((s,p)=>s+p.prob,0);
+    let r=Math.random()*total,acum=0;
+    for(let p of premios){ acum+=p.prob; if(r<=acum) return p.nombre; }
+}
+function generarFolio(){
+    return "NAV-" + Math.random().toString(36).substring(2,8).toUpperCase();
+}
+
+// =================================================
+// GIRAR RULETA
+// =================================================
+document.getElementById("btnGirar").onclick = () => {
+    if (!datosOK || girando) return;
+
+    girando = true;
+    document.getElementById("btnGirar").disabled = true;
+    document.getElementById("btnValidar").disabled = true;
+
+    const ruleta = document.getElementById("ruleta");
+    const premio = premioAleatorio();
+    const index = premios.findIndex(p => p.nombre === premio);
+    const grados = 360 / premios.length;
+    const giro = (360*5) - (index*grados) - (grados/2);
+
+    ruleta.style.transform = `rotate(${giro}deg)`;
+
+    setTimeout(() => {
+        // Mostrar carga DESPUÉS de girar
+        document.getElementById("overlayCarga").style.display = "flex";
+        const fecha = new Date().toLocaleDateString("es-MX");
+        const folio = generarFolio();
+        const telefono = document.getElementById("telefono").value.trim();
+        const correo = document.getElementById("correo").value.trim().toLowerCase();
+
+        const payload = {
+            telefono, correo, premio,
+            fecha_cliente: fecha, folio, userAgent: navigator.userAgent
+        };
+
+        console.log("📤 Enviando:", payload);
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            console.log("Status:", response.status);
+            return response.text();
+        })
+        .then(text => {
+            console.log("Respuesta recibida:", text);
+            document.getElementById("overlayCarga").style.display = "none";
+            
+            try {
+                const respuesta = JSON.parse(text);
+                console.log("JSON parseado:", respuesta);
+
+                if (respuesta.status === "error") {
+                    alert("❌ Error: " + respuesta.message);
+                    girando = false;
+                    document.getElementById("btnGirar").disabled = false;
+                    document.getElementById("btnValidar").disabled = false;
+                    return;
+                }
+
+                if (respuesta.status === "duplicate_email") {
+                    alert("❌ Este correo ya participó.");
+                    girando = false;
+                    document.getElementById("btnGirar").disabled = false;
+                    document.getElementById("btnValidar").disabled = false;
+                    return;
+                }
+
+                if (respuesta.status === "ok") {
+                    console.log("✅ ÉXITO:", respuesta);
+                    
+                    document.getElementById("bTelefono").textContent = telefono;
+                    document.getElementById("bPremio").textContent = premio;
+                    document.getElementById("bFecha").textContent = fecha;
+                    document.getElementById("bFolio").textContent = folio;
+
+                    document.getElementById("overlay").style.display = "flex";
+
+                    const btnWhatsapp = document.getElementById("btnWhatsapp");
+                    btnWhatsapp.onclick = () => {
+                        const mensaje = 
+`¡Felicidades! 🎄 Gané un premio en la ruleta navideña CeluLink 🎅
+📱 Teléfono: ${telefono}
+🎁 Premio: ${premio}
+🎫 Folio: ${folio}
+
+¡Que disfrutes esta Navidad! 🎉`;
+
+                        const url = `https://wa.me/52${WHATSAPP_NUM}?text=${encodeURIComponent(mensaje)}`;
+                        window.open(url, "_blank");
+                    };
+
+                    girando = false;
+                }
+            } catch (e) {
+                console.error("Error parseando JSON:", e);
+                alert("Error procesando respuesta del servidor.");
+                girando = false;
+                document.getElementById("btnGirar").disabled = false;
+                document.getElementById("btnValidar").disabled = false;
+            }
+        })
+        .catch(error => {
+            document.getElementById("overlayCarga").style.display = "none";
+            console.error("Error:", error);
+            alert("✅ Tu premio fue registrado (aunque hubo error de conexión).\nRecarga la página en unos segundos.");
+            girando = false;
+            document.getElementById("btnGirar").disabled = false;
+            document.getElementById("btnValidar").disabled = false;
+        });
+
+    }, 5000);
+};
+
+function cerrarBoleto() {
+    document.getElementById("overlay").style.display = "none";
+    // Desactivar todo
+    document.getElementById("telefono").disabled = true;
+    document.getElementById("correo").disabled = true;
+    document.getElementById("btnValidar").disabled = true;
+    document.getElementById("btnGirar").disabled = true;
+    
+    // Mostrar botón de refrescar
+    document.getElementById("btnRefrescar").style.display = "block";
+}
+</script>
+
+</body>
+</html>
